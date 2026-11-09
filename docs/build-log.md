@@ -122,3 +122,24 @@ No runtime/tooling configuration was changed; the repository instruction update 
 ### Review and next step
 
 The documentation task is complete for a scoped local commit after the staged checks. Review the M1 draft, including the added efficiency/performance scope, before authorizing implementation. Formal roadmap additions and frontend selection remain undecided. M0 review is still pending, and no push is authorized.
+
+## 2026-11-09 — Roadmap update: M7 load testing
+
+### Human direction and agent work
+
+The human explicitly asked to add load testing to M7. Codex inspected the clean repository and current instructions, wrote [the M7 planning spec](../specs/internal/m7-scaling-load-testing.md) before supporting edits, and added optional M7 to the roadmap. This intentionally changes the charter after the earlier tasks preserved it byte for byte. Only the new M7 section is intended to change; earlier charter sections remain intact.
+
+The milestone now calls for average-load, stress, spike, and soak profiles, reproducible budgets/thresholds, latency and successful-work measurements, expected rejection classification, backpressure, recovery, and consistency/isolation checks. M1 retains its modest baseline. Codex updated the M1/ADR references and appended the human's explicit direction to the input record, preserving the history of the earlier proposal. No implementation, runtime test, production action, or provider spending is authorized by this documentation update.
+
+### Verification
+
+- `npm run format` and `npm run format:check`: exit 0; authored Markdown formatting passes. The charter remains excluded from automated formatting.
+- The first one-off documentation check exited 1 because PowerShell changed the checker's literal em dash to `?` when piping JavaScript to Node. A character-code diagnostic confirmed that the charter's heading was correct. Using an ASCII `\u2014` escape in the checker corrected the transport issue without modifying the document.
+- The corrected check exited 0: all 54 local Markdown links resolve, only the six intended planning-documentation files changed, and removing the new M7 section reproduces the prior charter exactly.
+- Inspect the staged diff and require `git diff --cached --check` before committing.
+
+No load tests or runtime checks are claimed; this task changes planning documentation only. Existing M0 limitations remain open.
+
+### Review checkpoint
+
+The documentation task is complete for a local commit after the staged checks. M7 remains future optional work requiring a reviewed implementation spec and separate authorization. M0 review is still pending, M1 implementation remains unstarted, and no push is authorized.

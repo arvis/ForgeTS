@@ -24,7 +24,7 @@ This gives M1 a small scope with testable failure behavior and a clear path to l
 
 Raising concurrency later requires durable job ownership, crash recovery, duplicate-work protection, cancellation, resource admission, and bounded provider spending. More workers must not share unrestricted execution workspaces. Existing M0 dependency findings and unverified Docker readiness remain open review items.
 
-The human's later questions about indexes and load testing exposed that concurrency-correctness tests alone do not provide a performance baseline. The M1 draft now states both requirements explicitly. Larger stress/spike/soak campaigns are proposed before future multi-worker operation; optional M7 and the frontend stack remain undecided. See [the human-input record](../human-input.md) for attribution and proposal status.
+The human's later questions about indexes and load testing exposed that concurrency-correctness tests alone do not provide a performance baseline. The M1 draft now states both requirements explicitly. The human subsequently instructed Codex to add load testing to M7; [the optional M7 draft](../../specs/internal/m7-scaling-load-testing.md) and roadmap now include larger workload profiles and scaling/recovery evidence. M7 implementation, detailed queue/worker choices, and the frontend stack remain undecided. See [the human-input record](../human-input.md) for attribution and proposal status.
 
 ## References
 

@@ -216,6 +216,14 @@ Report fixture pass rate, invalid-output detection, retry outcomes, elapsed time
 - GitHub PR preparation after explicit human approval and permission checks.
 - Additional provider support and comparative evaluations.
 
+### Optional M7 — Scaling and load testing
+- Preserve M1's small API/database baseline; define average-load, stress, spike, and soak profiles for larger workloads and any justified multi-worker design.
+- Evaluate bounded concurrency, durable jobs, worker ownership/recovery, idempotency, cancellation, and backpressure before increasing operational concurrency.
+- Use disposable test environments and deterministic mock providers by default, with explicit request/duration/resource budgets and abort conditions. Exclude production targets and credentials; paid provider tests require separate authorization.
+- Record latency percentiles, successful-run throughput, expected rejections, unexpected errors, queue/resource measurements where applicable, and state/event/isolation correctness under load.
+- Retain reproducible scripts, workload/environment details, raw results, and thresholds chosen before measurement. See `specs/internal/m7-scaling-load-testing.md` for the draft acceptance criteria.
+- **Done when:** actual bounded load-test results establish the tested operating limits and recovery behavior, preserve correctness and isolation, and support a human-reviewed scaling decision. This roadmap entry does not authorize implementation.
+
 ## 11. Definition of done
 
 A successful MVP must:
