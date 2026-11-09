@@ -32,3 +32,13 @@ Assets include the developer's repository and host files, credentials, future pr
 ## Residual uncertainty
 
 No sandbox, command policy, redaction, resource limit, provider isolation, database access policy, approval gate, or adversarial evaluation has been tested because none exists yet. PostgreSQL readiness requires a running Docker daemon and must be reported separately from static Compose validation. Future isolation behavior will depend on the selected container runtime and operating system and will need direct verification. Database backups, remote hosting, authentication, and production operation are outside this milestone.
+
+## Proposed M1 requirements and later execution gate
+
+The human requested that the recommendations about personal-data protection, production separation, architecture, scaling, and TypeScript be recorded before M1 implementation. [The M1 spec](../specs/internal/m1-contracts-orchestration.md) defines the acceptance criteria; [ADR 0003](adr/0003-m1-safety-and-architecture.md) records the proposed defaults. None of these requirements has been implemented or tested yet.
+
+M1 must keep mock responses inert and provide no executor or production capability. Proposed checks cover local-only API/database configuration, separate test data, explicit migrations, bounded inputs/outputs/deadlines, sanitized diagnostics, atomic state/event writes, idempotency, one active run, cancellation, and restart recovery. Negative tests must demonstrate these behaviors, including rejection before connection/mutation where applicable. TypeScript and lint checks complement these tests but cannot restrict OS access.
+
+Real code execution remains blocked until M2's separate sandbox spec implements and verifies filesystem, credential, network, privilege, process, and resource boundaries. An allowlisted `npm test` or installation command still executes potentially hostile code; command names alone do not make it safe. Adversarial checks must use disposable canaries and development resources, never personal files or production data.
+
+The coding agent used to build ForgeTS still has the permissions of its development session. Git history and `AGENTS.md` cannot prevent host-wide damage or restore arbitrary untracked files. Development inside a disposable VM with only the project and development credentials is a separate environment choice, not a protection delivered by this repository. Loopback database validation also cannot establish that a local port is not forwarded to production; controlled credentials and endpoints remain prerequisites.

@@ -69,3 +69,30 @@ The final staged diff and whitespace check are inspected before committing the s
 ### Review and next step
 
 The follow-up is complete and verified for a scoped local commit. No push is authorized. M0 remains at the human review checkpoint, and M1 remains unstarted.
+
+## 2026-11-09 — M1 planning: Safeguards and architecture
+
+### Task, human decisions, and agent involvement
+
+The human asked Codex to add the discussed safeguards, architecture/scaling, and TypeScript recommendations to M1. This authorizes documentation, not M1 implementation, production access, sandbox execution, or acceptance of M0's open findings. Codex inspected the current instructions, charter, threat model, ADRs, specs, and clean Git state, then wrote [the M1 draft](../specs/internal/m1-contracts-orchestration.md) before updating supporting documents. No sub-agents were used.
+
+### Changes and rationale
+
+Codex added testable requirements for inert mock execution, local development/test targets, no production credentials or agent-controlled execution, transactionally consistent events, idempotent submissions, one active run, bounded inputs/outputs/deadlines, cancellation, and interrupted-run recovery. The spec requires strict TypeScript plus type-aware promise lint rules and unhappy-path-first behavioral tests when implementation is authorized.
+
+[ADR 0003](adr/0003-m1-safety-and-architecture.md) records proposed defaults and future scaling boundaries. The threat model and README link the draft. M2 has a blocking prerequisite for separately specified and directly verified containment, including install scripts/tests, filesystem and symlink escape attempts, credential/network restrictions, and process/resource limits. Documentation distinguishes trusted host development from a future runtime sandbox and does not claim that instructions, Git, or lint can protect arbitrary personal files.
+
+### Verification
+
+- `npm run format`: exit 0; formatted the new M1 acceptance-criteria table.
+- `npm run format:check`: exit 0; authored-file formatting passes.
+- A one-off Node documentation check: exit 0; all 32 local Markdown links resolve, changes are limited to the five intended documentation files, and the charter is byte-identical to the current Git version. No runtime, dependency, tooling, or instruction file changed.
+- `git diff --cached --check`: exit 0; the staged documentation diff was inspected before committing.
+
+This task changes documentation only, so no artificial unit tests are added and no M1 runtime, lint-rule implementation, or containment verification is claimed. Existing dependency findings and unverified Docker readiness remain open; they are not rechecked or resolved by this planning task.
+
+Spec review clarified that awaiting-review runs release the execution slot and survive restart, recovery requires exclusive application ownership, and development migrations remain allowed while test cleanup against the demonstration database is denied. Resolving these distinctions before code avoids ambiguous failure and recovery behavior.
+
+### Review and next step
+
+The documentation task is complete for a scoped local commit after the staged checks. The M1 implementation spec remains a draft: review the defaults, complete the M0 checkpoint, and explicitly authorize M1 before behavioral implementation. The spec will be split into reviewable implementation tasks where needed. No push or later milestone work is authorized.

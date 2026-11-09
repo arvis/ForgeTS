@@ -71,4 +71,4 @@ The intended later pipeline is spec validation, planning, isolated implementatio
 
 ## Review checkpoint
 
-Review the [M0 specification](specs/internal/m0-bootstrap.md), ADR, changes, and build log before authorizing M1. M1 will introduce contracts, orchestration, persistence, and a simulated CLI/API workflow. No milestone beyond M0 has been started. There are no factory evaluation metrics or security guarantees to report yet.
+Review the [M0 specification](specs/internal/m0-bootstrap.md), ADR, changes, and build log before authorizing M1. The [M1 draft](specs/internal/m1-contracts-orchestration.md) proposes contracts, orchestration, persistence, and a simulated CLI/API workflow, with safeguards, scaling limits, type-aware linting, and an explicit gate before real execution. M1 implementation has not started. There are no factory evaluation metrics or security guarantees to report yet.
