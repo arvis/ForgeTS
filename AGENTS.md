@@ -11,6 +11,7 @@ Read [the project charter](docs/PLAN.md) before starting work. Paths inside the 
 - Implement the smallest change that satisfies the spec, then run the relevant tests and repository checks. For regressions, first add a test that reproduces the bug.
 - For documentation or configuration changes, use appropriate verification instead of artificial unit tests. Do not claim that earlier work followed test-first development without evidence.
 - Record meaningful architectural decisions in `docs/adr/`. Update `docs/build-log.md` with the task, agent involvement, human decisions, actual verification results, limitations, and lessons learned.
+- Maintain `docs/human-input.md` with substantive human questions, constraints, directions, and explicit decisions, linked to resulting specs/ADRs/evidence. Distinguish agent proposals from human choices; a question is not milestone approval. Summarize relevant engineering input without unrelated personal details.
 - Never claim checks passed without running them. Do not invent metrics or security guarantees. Report blocked or failing verification explicitly.
 
 ## Verification

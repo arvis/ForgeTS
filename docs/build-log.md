@@ -1,5 +1,7 @@
 # ForgeTS build log
 
+[Human input and project direction](human-input.md) provides a concise index of the human's substantive questions, directions, and pending decisions. This log records development activity and actual verification.
+
 ## 2026-11-09 — M0 foundation
 
 ### Task and authorization
@@ -96,3 +98,27 @@ Spec review clarified that awaiting-review runs release the execution slot and s
 ### Review and next step
 
 The documentation task is complete for a scoped local commit after the staged checks. The M1 implementation spec remains a draft: review the defaults, complete the M0 checkpoint, and explicitly authorize M1 before behavioral implementation. The spec will be split into reviewable implementation tasks where needed. No push or later milestone work is authorized.
+
+## 2026-11-09 — Planning follow-up: Performance and human input
+
+### Human input and agent involvement
+
+The human asked where load testing belongs and whether their questions are recorded for recruiters to see their contribution. Earlier follow-up questions covered frontend timing, CSS choice, a possible later scaling milestone, and why basic database indexes should not wait for scaling. The build log recorded major requested changes but did not systematically index those questions. Codex wrote [the documentation task spec](../specs/internal/m1-performance-and-human-input.md), added a linked human-input record and maintenance rule, and updated the M1 draft and proposed ADR. No implementation or milestone approval was inferred from these questions.
+
+### Result and attribution
+
+[The input record](human-input.md) distinguishes human requests from Codex recommendations, links resulting artifacts, and identifies pending decisions. Tailwind/shadcn, `apps/web/`, optional M7, and later performance milestone additions remain proposals. The human's process requirements and instruction to document safeguards are recorded as explicit directions. The README now provides an entry point for portfolio readers.
+
+The M1 draft now explicitly requires query-driven indexes/constraints, bounded pagination, query-plan evidence, and a modest opt-in local mock-backed load baseline. The proposed initial profile is capped at 5 API clients, 200 requests including warm-up, and 60 seconds, while retaining one executing run. Measurements must separate expected admission rejections from successful work and unexpected errors. No latency, throughput, load result, index, test script, or frontend implementation was created by this documentation task.
+
+### Verification
+
+- `npm run format` and `npm run format:check`: exit 0; authored Markdown formatting passes.
+- One-off Node verification: exit 0; all 49 local Markdown links resolve, only the seven intended documentation/instruction files changed, and `docs/PLAN.md` remains byte-identical to Git.
+- Staged diff and whitespace are inspected before committing the completed documentation task.
+
+No runtime/tooling configuration was changed; the repository instruction update concerns attribution only. No load tests, unit tests, database queries, or paid calls were run for this documentation-only task. Existing M0 findings remain open. The distinction between concurrency correctness and measured performance is now explicit in the draft and attributable to the human's follow-up questions.
+
+### Review and next step
+
+The documentation task is complete for a scoped local commit after the staged checks. Review the M1 draft, including the added efficiency/performance scope, before authorizing implementation. Formal roadmap additions and frontend selection remain undecided. M0 review is still pending, and no push is authorized.

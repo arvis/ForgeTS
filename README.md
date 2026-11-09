@@ -8,6 +8,8 @@ The irony is intentional: ChatGPT suggested building an agentic software factory
 
 Codex's development workflow is separate from ForgeTS's future runtime. The current spec, generated changes, verification evidence, and human review are the first part of the meta-demo; ForgeTS cannot process a feature specification yet.
 
+For a portfolio walkthrough, start with [human input and project direction](docs/human-input.md), then follow the linked specs, ADRs, and [build log](docs/build-log.md) for implementation and verification evidence.
+
 ## Setup and verification
 
 Use Node 24.x (at least 24.11.0) and npm 11.x. The tested bootstrap versions are Node 24.11.0 and npm 11.6.1; `.nvmrc` and `packageManager` record them. Git is needed for normal repository development. Docker with Compose is optional for M0 checks and required only for the development database commands.

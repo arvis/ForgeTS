@@ -15,6 +15,7 @@ The human asked how to protect personal data and production systems, how archite
 - Keep the unauthenticated API on IPv4 loopback and validate explicit local development/test database targets before connecting. Specs/API input cannot supply arbitrary host file paths or database URLs. Migrations are deliberate developer actions, and integration tests use a separate disposable database. Local targets still depend on trusted environment setup and must not forward to production.
 - Start with conservative trusted limits: 64 KiB input and each structured output/report, 20 stage transitions, a 30-second mock run deadline, and database operations capped at 5 seconds. Do not add repair retries or distributed queues to M1. Detect interrupted runs on restart and fail them explicitly instead of automatically replaying stages.
 - Preserve strict TypeScript and add type-aware ESLint, including `no-floating-promises` and `no-misused-promises`, with demonstrated negative/positive lint fixtures. Runtime Zod validation remains necessary at external boundaries. Test unhappy paths before implementing behavior.
+- Include basic database efficiency and a small bounded local API/database performance baseline in M1: query-driven indexes, database-enforced uniqueness, cursor pagination, documented query plans, and mock-backed measurements. Keep expected admission rejections separate from successful work and unexpected errors. These are draft acceptance requirements; no performance results exist yet.
 - Make hard execution isolation a separate, blocking M2 prerequisite. Generated dependency installations, builds, tests, and scripts all require the worker boundary. Use a disposable environment, no credentials or host-wide mounts, no Docker socket, no default network, restricted privileges, resource limits, and actual adversarial checks against disposable canaries.
 
 ## Consequences and limits
@@ -22,6 +23,8 @@ The human asked how to protect personal data and production systems, how archite
 This gives M1 a small scope with testable failure behavior and a clear path to later workers. It intentionally offers no parallel-run throughput, production deployment, hostile-code safety, or enforced human approval. Timeouts and cancellation in trusted mock code are not process isolation. The development agent and npm tooling still operate under their host permissions; repository instructions do not enforce filesystem access control. A disposable VM with only development assets can reduce development exposure but is not created by M1.
 
 Raising concurrency later requires durable job ownership, crash recovery, duplicate-work protection, cancellation, resource admission, and bounded provider spending. More workers must not share unrestricted execution workspaces. Existing M0 dependency findings and unverified Docker readiness remain open review items.
+
+The human's later questions about indexes and load testing exposed that concurrency-correctness tests alone do not provide a performance baseline. The M1 draft now states both requirements explicitly. Larger stress/spike/soak campaigns are proposed before future multi-worker operation; optional M7 and the frontend stack remain undecided. See [the human-input record](../human-input.md) for attribution and proposal status.
 
 ## References
 

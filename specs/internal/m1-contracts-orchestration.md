@@ -81,6 +81,31 @@ Write and run the relevant unhappy-path test before each behavior implementation
 
 M1 prioritizes correctness with one active run and atomic persisted transitions. Do not add distributed queues, Kubernetes, multiple workers, or scaling claims. Keep the core independent of worker placement so a later milestone can add durable jobs and a bounded worker pool. Before raising concurrency, test job ownership, leases/recovery, idempotent processing, cancellation, database contention, and admission limits. Before paid providers, add concurrency/token/cost budgets based on real reported usage. Each future worker needs its own disposable workspace and enforced resource boundaries.
 
+### Database efficiency belongs in M1
+
+- Add indexes and constraints with the schema migrations: primary keys, a unique idempotency key in its documented scope, and unique `(run_id, sequence)` event ordering. Do not create redundant indexes already supplied by primary/unique constraints.
+- Choose additional indexes from implemented queries. For example, state-filtered run history ordered by creation time may justify `(state, created_at, id)`; do not add speculative indexes on every column. Record the read benefit and write/storage cost.
+- Bound run/event listing with deterministic cursor ordering, a default page size of 20, and a maximum of 100. Test invalid limits and cursor input, ties in timestamps, ordering across pages, and absence of an unbounded list path. Clearly document behavior when records change during pagination.
+- Inspect representative read queries with `EXPLAIN (ANALYZE, BUFFERS)` using a documented synthetic development/test dataset and current statistics. This command executes its query: use read-only statements against the dedicated test database. Record dataset size/distribution and plans; a sequential scan on a small dataset is not automatically a failure. Synthetic results describe the fixture, not a production workload.
+
+### Small load baseline in M1
+
+- After the local API/database workflow works, add an opt-in local-only performance script, separate from fast unit tests. Use mock roles and the dedicated disposable test database; no live model, production endpoint, or generated-code worker is involved. A load-testing tool such as k6 can be selected in the implementation spec; no tool is installed by this draft.
+- Define and record the endpoint mix, deterministic seed data, warm-up, measured duration, and abort behavior before execution. Cap concurrency at 5 API clients and stop after 200 total requests including warm-up or 60 seconds elapsed, whichever occurs first. Keep one executing mock run regardless of client count; overlapping submissions exercise admission control rather than concurrent workers.
+- Measure run/status/event reads and bounded submissions. Record endpoint-level sample counts, p50/p95 latency, request throughput, unexpected errors/timeouts, accepted/busy/idempotent responses, and API/database CPU/memory observations where actually available. Separate API response time from end-to-end mock-run duration.
+- Expected busy/validation responses must match their specified semantics. Report them separately from unexpected failures and successful work throughput; a fast rejection must not inflate successful-run performance. A duplicate submission must still produce only one run.
+- Correctness failures, unhandled errors, data corruption, and exceeded test safety limits fail the test. Initial latency/throughput observations establish a baseline; choose any later regression thresholds before subsequent measurement and record their rationale. Report sample counts and avoid unsupported capacity claims from a small local test.
+- Keep the baseline reproducible with a documented command, tool/database versions, hardware/resource settings, workload, raw summary, and limitations. Run it separately from ordinary CI initially. If no measurement ran, report it as unverified rather than generating representative numbers.
+
+| ID   | Additional M1 acceptance evidence                                                                                                                                                                                                                                                          |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| AC9  | Migrations enforce scoped idempotency uniqueness and per-run event sequence uniqueness; actual listing queries have bounded cursor pagination. Query-plan evidence explains chosen indexes without forcing an index scan or claiming production representativeness.                        |
+| AC10 | An actual bounded, mock-backed API/database baseline runs against approved local test resources, preserves single-run admission and persisted consistency, and records its profile, request classifications, sample counts, and measurements. No unexecuted performance result is claimed. |
+
+M3 should verify actual execution time/resource enforcement under deliberately broken workloads. Repeatable baseline reporting in M5 and broader stress/spike/soak tests before a later multi-worker release are proposed follow-ups. An optional M7 was discussed but is not in the charter or authorized. The dashboard is independent of these backend checks; load testing need not wait for a frontend.
+
+References: [PostgreSQL index usage](https://www.postgresql.org/docs/17/indexes-examine.html), [EXPLAIN execution semantics](https://www.postgresql.org/docs/17/sql-explain.html), [API load-test profiles](https://grafana.com/docs/k6/latest/testing-guides/api-load-testing/), and [performance thresholds](https://grafana.com/docs/k6/latest/using-k6/thresholds/).
+
 ## Gate before real execution in M2/M3
 
 Before allowing generated code or target-repository commands, a separate approved sandbox spec must implement and directly verify:
