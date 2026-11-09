@@ -157,3 +157,11 @@ Commands: `npm install` (exit 0, 10 moderate audit findings remain), `npm run bu
 Docker Desktop was started as authorized local infrastructure. Its Linux engine responded, and the separate tmpfs-backed test PostgreSQL service reached healthy status. This resolves the earlier stopped-engine environment blocker; it does not establish sandbox containment. Compose/persistence changes will be included with M1b, not this contract commit.
 
 M1a repository verification: `npm run format` and `npm run verify` exited 0; formatting, lint, strict typechecks, 6 contract tests, and the existing module smoke test passed. Staged whitespace/scope are checked before the scoped commit.
+
+## 2026-11-09 — M1b: Real PostgreSQL persistence
+
+Codex specified M1b before implementation and added integration tests against the dedicated loopback test service. The initial compiled integration test exited 1 at the unimplemented explicit migration. After parameterized SQL, migrations, owner locking, transactional admission/transitions, bounded keyset/event pages, and interruption recovery were implemented, the same command passed 9/9 tests without skips. An initial compilation caught an unused import, which was removed before the green run.
+
+The tests directly verified that a second owner/migrator is rejected; conflicting idempotency keys and busy admission cannot create extra runs; an injected event constraint failure rolls back the preceding state update; competing transitions have one winner; illegal transitions preserve state; restart records interruption without replay; and history pagination handles timestamp ties. No database was dropped or truncated. The only fault fixture was a temporary test-only event constraint removed in `finally`.
+
+`npm run verify` passed formatting, lint, builds, strict typechecks, and 8 unit/smoke tests. `npm run test:integration --workspace @forgets/persistence` passed 9 real-PostgreSQL tests. Dependency audit still reported 10 moderate findings. Root builds now follow dependency order, and Compose defines distinct demo/test ports and credentials; test storage is tmpfs. Transaction cleanup destroys a connection if rollback itself fails, rather than returning uncertain state to the pool. No sandbox claim is made.

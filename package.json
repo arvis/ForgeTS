@@ -18,13 +18,15 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings 0",
-    "typecheck": "npm run typecheck --workspaces",
-    "build": "npm run build --workspaces",
-    "test": "npm run test --workspaces",
+    "typecheck": "npm run build && npm run typecheck --workspaces",
+    "build": "npm run build -w @forgets/contracts && npm run build -w @forgets/core && npm run build -w @forgets/persistence",
+    "test": "npm run build && npm run test --workspaces",
+    "test:integration": "npm run build && npm run test:integration -w @forgets/persistence",
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm test",
     "db:config": "docker compose config --quiet",
     "db:up": "docker compose up --detach --wait --wait-timeout 90",
-    "db:down": "docker compose down"
+    "db:down": "docker compose down",
+    "db:test:up": "docker compose --profile test up --detach --wait --wait-timeout 90 postgres-test"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

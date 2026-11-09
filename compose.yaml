@@ -19,5 +19,22 @@ services:
       retries: 12
       start_period: 5s
 
+  postgres-test:
+    profiles: [test]
+    image: postgres:17
+    environment:
+      POSTGRES_USER: forgets_test
+      POSTGRES_PASSWORD: forgets_test_dev_only
+      POSTGRES_DB: forgets_test
+    ports:
+      - '127.0.0.1:5434:5432'
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U forgets_test -d forgets_test']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
 volumes:
   postgres-data:

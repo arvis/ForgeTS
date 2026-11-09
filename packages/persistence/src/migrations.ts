@@ -1,0 +1,28 @@
+// Trusted, additive developer migration. Never supplied by a run or model.
+export const migration1 = `
+CREATE TABLE IF NOT EXISTS factory_migrations (version integer PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS factory_runs (
+  id uuid PRIMARY KEY,
+  idempotency_key text NOT NULL UNIQUE,
+  input_hash text NOT NULL,
+  state text NOT NULL CHECK (state IN ('CREATED','SPEC_VALIDATED','PLANNED','IMPLEMENTING','VERIFYING','REVIEWING','AWAITING_HUMAN_APPROVAL','FAILED','CANCELLED')),
+  version integer NOT NULL CHECK (version >= 0),
+  created_at timestamptz NOT NULL,
+  data jsonb NOT NULL CHECK (octet_length(data::text) <= 65536),
+  CHECK (data->>'state' = state),
+  CHECK ((data->>'version')::integer = version),
+  CHECK (data->>'id' = id::text)
+);
+CREATE UNIQUE INDEX IF NOT EXISTS factory_runs_active ON factory_runs ((true))
+  WHERE state IN ('CREATED','SPEC_VALIDATED','PLANNED','IMPLEMENTING','VERIFYING','REVIEWING');
+CREATE INDEX IF NOT EXISTS factory_runs_history ON factory_runs (created_at DESC, id DESC);
+CREATE INDEX IF NOT EXISTS factory_runs_state_history ON factory_runs (state, created_at DESC, id DESC);
+CREATE TABLE IF NOT EXISTS factory_events (
+  run_id uuid NOT NULL REFERENCES factory_runs(id),
+  sequence integer NOT NULL CHECK (sequence >= 0),
+  state text NOT NULL,
+  data jsonb NOT NULL CHECK (octet_length(data::text) <= 65536),
+  PRIMARY KEY (run_id, sequence)
+);
+INSERT INTO factory_migrations(version) VALUES (1) ON CONFLICT DO NOTHING;
+`;
