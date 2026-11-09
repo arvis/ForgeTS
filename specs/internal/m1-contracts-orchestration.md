@@ -1,6 +1,6 @@
 # M1: Contracts, persisted orchestration, and a safe mock workflow
 
-Status: draft for human review on 2026-11-09. This document authorizes no implementation. M0 review and explicit M1 authorization are still required.
+Status: implementation authorized by the human on 2026-11-09 after reading the specs. Acceptance evidence remains pending. Stop for review before M2.
 
 ## Goal
 

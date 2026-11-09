@@ -1,5 +1,9 @@
 # Human input and project direction
 
+## Decision update — M1 implementation authorized
+
+On 2026-11-09 the human stated that they had read the specs and explicitly requested M1 implementation. This supersedes historical entries below that say M0 review/M1 authorization are pending. Codex is implementing M1 under the reviewed specifications and must stop before M2; approval of the completed M1 result has not yet been given.
+
 This record summarizes substantive questions and instructions from the human collaborator, with the changes or proposals they prompted. Entries are paraphrases of the conversation on 2026-11-09. The development agent maintains this record; implementation evidence is in the linked specs, ADRs, [build log](build-log.md), and Git commits. A question records review input; milestone approval requires an explicit instruction.
 
 ## Implemented workflow and documented requirements

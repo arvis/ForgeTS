@@ -1,5 +1,9 @@
 # ForgeTS build log
 
+## Current checkpoint
+
+On 2026-11-09 the human explicitly instructed: implement M1 after reading the specs. M1 work is authorized; stop for review before M2. Earlier pending-review statements below describe the historical checkpoints, not the current authorization.
+
 [Human input and project direction](human-input.md) provides a concise index of the human's substantive questions, directions, and pending decisions. This log records development activity and actual verification.
 
 ## 2026-11-09 — M0 foundation
@@ -143,3 +147,13 @@ No load tests or runtime checks are claimed; this task changes planning document
 ### Review checkpoint
 
 The documentation task is complete for a local commit after the staged checks. M7 remains future optional work requiring a reviewed implementation spec and separate authorization. M0 review is still pending, M1 implementation remains unstarted, and no push is authorized.
+
+## 2026-11-09 — M1a: Contracts and local policy
+
+The human authorized M1 implementation after reading the specs. Codex wrote the M1a implementation spec, updated the instruction checkpoint, and recorded ADR 0004. The first tests exercised invalid/missing Markdown sections, malformed bullets, UTF-8 budgets, live-mode/policy overrides, forbidden transitions, remote/public/database settings, and pagination. With typed contract stubs, compilation succeeded and the actual test run failed 6/6 for unimplemented behavior. After implementing strict Zod contracts, the data-only parser, state policy, and local configuration validation, the same run passed 6/6 with no skips.
+
+Commands: `npm install` (exit 0, 10 moderate audit findings remain), `npm run build --workspace @forgets/contracts` (exit 0), and `npm test --workspace @forgets/contracts` (first exit 1, then exit 0). The Markdown example documents the supported format; permission-looking content remains inert data rather than being executed.
+
+Docker Desktop was started as authorized local infrastructure. Its Linux engine responded, and the separate tmpfs-backed test PostgreSQL service reached healthy status. This resolves the earlier stopped-engine environment blocker; it does not establish sandbox containment. Compose/persistence changes will be included with M1b, not this contract commit.
+
+M1a repository verification: `npm run format` and `npm run verify` exited 0; formatting, lint, strict typechecks, 6 contract tests, and the existing module smoke test passed. Staged whitespace/scope are checked before the scoped commit.
