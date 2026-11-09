@@ -47,3 +47,25 @@ Review M0 acceptance criteria, the minimal test scope, exact tool versions, loca
 ### Lessons learned
 
 Dependency version selection must respect peer compatibility rather than blindly taking every latest release: the current TypeScript ESLint package advertises TypeScript below 6.1, so this baseline conservatively uses TypeScript 5.9.3. A working Docker CLI does not prove that its daemon is running. Keep these facts separate from claims that the application or database works.
+
+## 2026-11-09 — M0 follow-up: Repository instructions
+
+### Task, human decisions, and agent involvement
+
+The human explicitly instructed Codex to adopt the proposed root `AGENTS.md` workflow, including local commits after completed specs and unit tests before behavior with unhappy paths first. Codex recorded the verified M0 baseline as local commit `807bb28` after rerunning `npm run verify` and `npm run db:config` successfully. This supersedes the original no-commit default; it does not approve M0's open findings or authorize M1.
+
+Codex wrote [the follow-up spec](../specs/internal/m0-agent-workflow.md) before implementing the instruction/layout changes, added root `AGENTS.md`, moved the original charter to `docs/PLAN.md`, updated live links and the formatting exclusion, and recorded [ADR 0002](adr/0002-repository-instructions.md). Historical descriptions above refer to the original root charter. No behavior or tests were changed, and no retrospective test-first claim is made.
+
+### Verification
+
+- `npm run format`: exit 0; authored files already formatted.
+- `npm run verify`: exit 0; formatting, lint, strict typecheck, compilation, and the unchanged 1/1 smoke test passed.
+- `npm run db:config`: exit 0; Compose configuration validates.
+- A one-off Node check of local Markdown links and charter relocation: exit 0; all 22 local links resolved, root `PLAN.md` was absent, and `docs/PLAN.md` matched the original M0 Git blob byte for byte. The SHA256 hash also matched before and after the move.
+- No unit tests were added for these instruction/documentation changes. The unhappy-path-first test requirement applies to subsequent behavior changes.
+
+The final staged diff and whitespace check are inspected before committing the scoped follow-up. Existing Docker runtime and dependency audit limitations remain open; this follow-up does not rerun or claim to resolve them.
+
+### Review and next step
+
+The follow-up is complete and verified for a scoped local commit. No push is authorized. M0 remains at the human review checkpoint, and M1 remains unstarted.

@@ -2,7 +2,7 @@ node_modules/
 dist/
 coverage/
 package-lock.json
-PLAN.md
+docs/PLAN.md
 .env
 .env.*
 !.env.example

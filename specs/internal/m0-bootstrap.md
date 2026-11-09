@@ -4,7 +4,7 @@ Status: specified before implementation on 2026-11-09; M0 implemented and locall
 
 ## Goal
 
-Create the smallest reviewable TypeScript workspace that supports the later ForgeTS milestones. This spec implements only M0 from `PLAN.md`, especially Section 13.
+Create the smallest reviewable TypeScript workspace that supports the later ForgeTS milestones. This spec implements only M0 from [the project charter](../../docs/PLAN.md), especially Section 13.
 
 ## Starting state
 

@@ -1,6 +1,6 @@
 # ForgeTS
 
-ForgeTS is an independent learning and portfolio project for a small TypeScript agentic software factory. **Current state: M0 foundation only, awaiting human review.** There is no runnable factory, API, CLI, database schema, agent, or sandbox yet. The roadmap is in [PLAN.md](PLAN.md).
+ForgeTS is an independent learning and portfolio project for a small TypeScript agentic software factory. **Current state: M0 foundation only, awaiting human review.** There is no runnable factory, API, CLI, database schema, agent, or sandbox yet. The roadmap is in [docs/PLAN.md](docs/PLAN.md). Repository workflow rules are in [AGENTS.md](AGENTS.md).
 
 ## Why this exists
 
@@ -54,6 +54,8 @@ The named volume retains data across `db:down`. Existing database volumes retain
 ## Architecture and scope
 
 ```text
+AGENTS.md                       Repository-wide development and commit rules
+docs/PLAN.md                    Project charter and milestone roadmap
 specs/internal/m0-bootstrap.md   M0 scope and acceptance criteria
 packages/core/                  Empty runtime boundary + compiled ESM smoke test
 docs/adr/                       Architectural decisions

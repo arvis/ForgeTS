@@ -26,7 +26,7 @@ The initial workspace has no usable factory feature. Its small dependency surfac
 
 ## References
 
-- [Project charter](../../PLAN.md)
+- [Project charter](../PLAN.md)
 - [M0 specification](../../specs/internal/m0-bootstrap.md)
 - [TypeScript ESLint configuration](https://typescript-eslint.io/getting-started/)
 - [Node release policy](https://github.com/nodejs/Release)
