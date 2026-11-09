@@ -1,0 +1,37 @@
+{
+  "name": "forgets",
+  "version": "0.0.0",
+  "private": true,
+  "description": "An independent agentic software factory learning project; M0 foundation only.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "packageManager": "npm@11.6.1",
+  "engines": {
+    "node": ">=24.11.0 <25",
+    "npm": ">=11 <12"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "npm run typecheck --workspaces",
+    "build": "npm run build --workspaces",
+    "test": "npm run test --workspaces",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm test",
+    "db:config": "docker compose config --quiet",
+    "db:up": "docker compose up --detach --wait --wait-timeout 90",
+    "db:down": "docker compose down"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.10.1",
+    "eslint": "10.14.0",
+    "prettier": "3.9.10",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.1"
+  }
+}
