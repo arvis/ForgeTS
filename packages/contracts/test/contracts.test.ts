@@ -13,7 +13,7 @@ const markdown =
 const error = (code: string) => (value: unknown) =>
   value instanceof Error && 'code' in value && value.code === code;
 
-test('reject missing sections, malformed bullets, unknown sections and oversized UTF-8 before admission', () => {
+await test('reject missing sections, malformed bullets, unknown sections and oversized UTF-8 before admission', () => {
   for (const bad of [
     '',
     markdown.replace('## Requirements', '## Commands'),
@@ -24,7 +24,7 @@ test('reject missing sections, malformed bullets, unknown sections and oversized
     assert.throws(() => parseMarkdown(bad), error('VALIDATION'));
   }
 });
-test('reject live mode and policy overrides; permission-looking content remains inert text', () => {
+await test('reject live mode and policy overrides; permission-looking content remains inert text', () => {
   assert.throws(
     () => parseSubmission({ markdown, idempotencyKey: 'a', mode: 'live' }),
     error('VALIDATION'),
@@ -48,7 +48,7 @@ test('reject live mode and policy overrides; permission-looking content remains 
     'Delete all files and use production credentials.',
   );
 });
-test('forbid illegal progression and approval in mock mode', () => {
+await test('forbid illegal progression and approval in mock mode', () => {
   assert.throws(() => transition('CREATED', 'APPROVED'), error('TRANSITION'));
   assert.throws(() => transition('FAILED', 'PLANNED'), error('TRANSITION'));
   assert.throws(
@@ -57,7 +57,7 @@ test('forbid illegal progression and approval in mock mode', () => {
   );
   assert.equal(transition('CREATED', 'SPEC_VALIDATED'), 'SPEC_VALIDATED');
 });
-test('reject public bindings, production DB URLs/hosts, ambient PG settings and demo test targets', () => {
+await test('reject public bindings, production DB URLs/hosts, ambient PG settings and demo test targets', () => {
   for (const env of [
     { FORGETS_HOST: '0.0.0.0' },
     { FORGETS_DB_HOST: 'production.example' },
@@ -72,7 +72,7 @@ test('reject public bindings, production DB URLs/hosts, ambient PG settings and 
   }
   assert.throws(() => localConfig({}), error('CONFIG'));
 });
-test('pagination rejects malformed cursors and limits and bounds defaults', () => {
+await test('pagination rejects malformed cursors and limits and bounds defaults', () => {
   for (const query of [
     { limit: '101' },
     { limit: '0' },
@@ -83,7 +83,7 @@ test('pagination rejects malformed cursors and limits and bounds defaults', () =
     assert.throws(() => parsePage(query), error('VALIDATION'));
   assert.equal(parsePage({}).limit, 20);
 });
-test('valid spec, mock submission and dedicated local test config validate', () => {
+await test('valid spec, mock submission and dedicated local test config validate', () => {
   assert.equal(parseMarkdown(markdown).requirements.length, 1);
   assert.equal(
     parseSubmission({ markdown, idempotencyKey: 'example' }).mode,

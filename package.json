@@ -17,9 +17,9 @@
   "scripts": {
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint . --max-warnings 0",
+    "lint": "eslint . --max-warnings 0 && node scripts/lint-rules.mjs",
     "typecheck": "npm run build && npm run typecheck --workspaces",
-    "build": "npm run build -w @forgets/contracts && npm run build -w @forgets/core && npm run build -w @forgets/persistence",
+    "build": "npm run build -w @forgets/contracts && npm run build -w @forgets/core && npm run build -w @forgets/agents && npm run build -w @forgets/persistence",
     "test": "npm run build && npm run test --workspaces",
     "test:integration": "npm run build && npm run test:integration -w @forgets/persistence",
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm test",

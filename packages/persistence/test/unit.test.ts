@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { localConfig } from '@forgets/contracts';
-test('demo targets cannot be reclassified as disposable test databases', () => {
+await test('demo targets cannot be reclassified as disposable test databases', () => {
   assert.throws(
     () =>
       localConfig({

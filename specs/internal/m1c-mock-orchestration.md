@@ -1,0 +1,5 @@
+# M1c: Bounded mock orchestration and typed asynchronous checks
+
+Implement the reviewed pipeline over the core repository port and a single injected mock-stage function. Validate every result; enforce deadline/cancellation/transition budgets; refuse live mode; never construct tool adapters. Failure reports contain codes and simulation evidence, with no raw exception messages. Awaiting-review reports have `mergeReady: false` and cannot approve a run. Keep CLI/API logic outside core.
+
+Write failing tests first for malformed/wrong/oversized outputs, rejected verification, forged reviewer approval, persistent failures, cancellation, hung stages/deadlines, exhausted budgets, malicious spec instructions, and unavailable persistence. Then cover the successful trace and schema-valid mock outputs. A minimal in-memory fixture is test scaffolding; PostgreSQL remains the actual runtime adapter. Enable typed promise lint rules and run a negative/handled fixture. Record actual red/green evidence and commit this slice.

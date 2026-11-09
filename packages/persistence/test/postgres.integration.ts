@@ -17,7 +17,7 @@ const spec = parseMarkdown(
   '# Test\n## Goal\nTest persistence\n## Requirements\n- Persist events\n## Acceptance Criteria\n- Atomic updates\n## Constraints\n- Test database only',
 );
 const hash = 'a'.repeat(64);
-test('real PostgreSQL migration, negative transactions, ownership, recovery and bounded reload', async (t) => {
+await test('real PostgreSQL migration, negative transactions, ownership, recovery and bounded reload', async (t) => {
   await migrate(config);
   let repo = new PgRepository(config);
   await repo.start();
