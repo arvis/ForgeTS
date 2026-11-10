@@ -1,4 +1,16 @@
 import { z } from 'zod';
+export {
+  ProviderPlanSchema,
+  ProviderImplementationSchema,
+  TokenUsageSchema,
+  InvocationSchema,
+  ProviderContextSchema,
+  ProviderConfigSchema,
+  providerJSONSchema,
+  type ProviderPlan,
+  type ProviderImplementation,
+  type Invocation,
+} from './provider.js';
 
 export const MAX_BYTES = 65_536;
 export const MAX_TRANSITIONS = 20;

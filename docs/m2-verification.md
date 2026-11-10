@@ -14,9 +14,13 @@ Date: 2026-11-10. M2 is incomplete. This record separates a verified standalone 
 - `FORGETS_DB_PASSWORD=forgets_test_dev_only npm run test:integration` (PowerShell environment assignment): passed all 12 existing disposable PostgreSQL/API integration checks. These are regression checks, not evidence of M2 database integration.
 - A separate trusted worker probe confirmed runtime/kernel versions and cleanup. Its first host invocation had a PowerShell quoting error before worker execution; a stdin script corrected the invocation. No failed invocation is counted as containment evidence.
 
+## Provider adapter increment
+
+[ADR 0010](adr/0010-m2-provider-adapter.md) records the fixed Responses endpoint, native-fetch choice, budgets, separate schemas and fake provenance. The initial six tests failed after successful compilation against missing behavior; two later tests first reproduced escaped-credential leakage and uncancelled response-body consumption. All eight then passed with fakes, and `npm run verify` passed all 34 unit/HTTP tests plus format/build/lint/strict typechecks. An unused-schema-dialect variable caused an intermediate lint failure and was removed without changing rules. Native transport remained disabled; no key or model account was accessed. Synthetic usage values test parsing only and are not usage measurements.
+
 ## Remaining milestone work and limits
 
-Provider/role contracts and fake-provider tests, additive live provenance/artifact persistence, one-owner/one-run lifecycle integration, sample application/CLI handoff, crash-orphan recovery and the full M2 acceptance suite remain pending. The public API/CLI still accept mock mode only. No real generated-code verification/repair or approval capability has been added. Lower-level containment tests execute trusted adversarial probes, not model-supplied commands.
+Additive provenance/artifact persistence, one-owner/one-run lifecycle integration, sample application/CLI handoff, crash-orphan recovery and the full M2 acceptance suite remain pending. The public API/CLI still accept mock mode only. No real generated-code verification/repair or approval capability has been added. Lower-level containment tests execute trusted adversarial probes, not model-supplied commands.
 
 The worker relies on the trusted Docker Desktop VM/daemon/kernel. The host control process retains Docker privileges. Cleanup during daemon failure can be unprovable and blocks further operations; restart recovery is not yet integrated. There is no claim of protection against kernel escapes, malicious administrators, or arbitrary production deployment.
 

@@ -1,5 +1,12 @@
 import type { Agent } from '@forgets/core';
 export {
+  ResponsesProvider,
+  type Provider,
+  type ProviderInput,
+  type ProviderReply,
+  type Transport,
+} from './provider.js';
+export {
   applyReplacements,
   contentHash,
   parseSnapshot,
