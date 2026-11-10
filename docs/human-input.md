@@ -39,6 +39,10 @@ This record summarizes substantive questions and instructions from the human col
 
 Record new substantive human questions, constraints, requested changes, and explicit decisions, linking to their resulting artifacts. Identify who proposed a choice and whether it was accepted, documented, implemented, or verified. Preserve historical entries and record later decisions as updates. Keep the record focused on engineering input and avoid unrelated personal details or claims of unobserved human review.
 
+## Decision update — 2026-11-10: Codex development usage
+
+The human requested task-aware Codex model/effort preferences, single-primary orchestration, narrow context, two automated repairs maximum, and deterministic verification to reduce avoidable usage. They required inspection of installed support, preservation of configuration/application behavior, clear enforcement limits, and no custom router without explicit approval. Codex added supported project defaults and IDE role files with an advisory workflow; [ADR 0006](adr/0006-codex-development-routing.md) explains manual primary selection, older-CLI role discovery limits, and the explicit project-trust step still required in the current user profile. This direction does not change the factory runtime or authorize another milestone.
+
 ## Decision update — 2026-11-09: M7 load testing
 
 The human explicitly instructed Codex to add load testing to M7. This supersedes the earlier table entries describing M7 as absent from the charter and later performance placement as undecided: the roadmap now includes optional M7, with [a linked draft](../specs/internal/m7-scaling-load-testing.md) covering load/stress/spike/soak profiles, measured capacity, backpressure, and failure recovery. M1 retains its small baseline. This is authorization to document the milestone, not to implement it; detailed scaling architecture and the frontend stack remain proposals, and M0 review remains pending.

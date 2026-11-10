@@ -14,6 +14,23 @@ Read [the project charter](docs/PLAN.md) before starting work. Paths inside the 
 - Maintain `docs/human-input.md` with substantive human questions, constraints, directions, and explicit decisions, linked to resulting specs/ADRs/evidence. Distinguish agent proposals from human choices; a question is not milestone approval. Summarize relevant engineering input without unrelated personal details.
 - Never claim checks passed without running them. Do not invent metrics or security guarantees. Report blocked or failing verification explicitly.
 
+## Codex development model and usage policy
+
+This policy is for Codex developing ForgeTS; it does not configure the factory's runtime agents. [Routing details and client limitations](docs/adr/0006-codex-development-routing.md) distinguish configuration from instructions.
+
+| Task                                                   | Preferred model                                                       | Effort |
+| ------------------------------------------------------ | --------------------------------------------------------------------- | ------ |
+| Architecture, complex specifications, security reviews | `gpt-6-astra`, the strongest reasoning model in the inspected catalog | High   |
+| Routine TypeScript implementation and debugging        | `gpt-6.1-sol`, the capable coding default                             | Medium |
+| Documentation, formatting, simple bounded changes      | `gpt-6-luna`, the fast suitable option                                | Low    |
+
+- Use one primary agent by default. Delegate only independent, substantial work with a bounded file/task scope and a clear benefit; avoid unnecessary parallel agents. Do not spawn an agent merely to switch models for a small task. Project configuration caps concurrent subagents at one.
+- Start routine debugging at Medium. Escalate complex failures to High only with evidence of unresolved cross-cutting reasoning or security risk, then return to the appropriate tier. Do not default to higher-than-High or automatic-delegation modes.
+- Read the charter and relevant spec at task start, then use targeted searches and bounded reads. Reuse known context; do not repeatedly load the whole repository, unchanged charter, ADR collection, or complete build log. Give a justified delegate only the context it needs.
+- Limit automated repair attempts to two per failure; if still failing, stop the retry loop and report evidence or escalate the unresolved task. Do not count speculative rewrites as verification or relax acceptance criteria to pass.
+- Prefer deterministic formatters, compiler, lint, tests, and static/configuration checks over additional LLM reviews. Run the relevant gates and repeat them only after changes/failures justify it; keep reports concise without omitting evidence.
+- `.codex/config.toml` supplies trusted-project Sol/Medium defaults, not automatic task classification. Supported custom roles pin their model/effort when selected. These preferences cannot switch an already-running primary agent; use the client model control or documented CLI flags. Fully automatic primary routing needs an external orchestrator, which is not authorized here.
+
 ## Verification
 
 - Use `npm ci` for a clean locked installation.
