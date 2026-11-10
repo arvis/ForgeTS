@@ -16,6 +16,7 @@
     "test:containment": "node --test --test-concurrency=1 dist/test/*.integration.js"
   },
   "dependencies": {
+    "@forgets/core": "0.0.0",
     "@forgets/agents": "0.0.0"
   },
   "devDependencies": {

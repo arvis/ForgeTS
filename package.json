@@ -26,6 +26,8 @@
     "verify": "npm run format:check && npm run build && npm run lint && npm run typecheck --workspaces && npm run test --workspaces",
     "factory": "node apps/cli/dist/src/index.js",
     "factory:sandbox": "node apps/cli/dist/src/sandbox-main.js",
+    "factory:verify": "node apps/cli/dist/src/verification-main.js",
+    "worker:prepare": "npm run build && node scripts/prepare-worker.mjs",
     "api": "node apps/api/dist/src/main.js",
     "db:migrate": "node packages/persistence/dist/src/migrate.js",
     "perf": "node apps/api/dist/src/performance.js",

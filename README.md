@@ -1,6 +1,6 @@
 # ForgeTS
 
-ForgeTS is an independent learning and portfolio project for a small TypeScript agentic software factory. **Current state: M1 is implemented; M2's fake-provider sandbox workflow is implemented, with live acceptance still blocked.** The local NestJS API persists simulated M1 runs. A separate fixture CLI drives real disposable Docker file edits and persists their hashes/diff, explicitly marked unverified. No generated code is executed and no paid provider call is enabled by the CLI. The roadmap is in [docs/PLAN.md](docs/PLAN.md), and workflow rules are in [AGENTS.md](AGENTS.md).
+ForgeTS is an independent learning and portfolio project for a small TypeScript agentic software factory. **Current state: M1, M2's offline workflow and M3's isolated verification/bounded repair are implemented and locally verified; M2 live acceptance remains unperformed.** The local NestJS API persists simulated M1 runs. Fixture CLIs drive real Docker edits, actual target checks and at most two fake-provider repairs with durable evidence. Generated code executes only inside workers; the CLIs enable no paid calls or approval. The roadmap is in [docs/PLAN.md](docs/PLAN.md), and workflow rules are in [AGENTS.md](AGENTS.md).
 
 ## Why this exists
 
@@ -10,25 +10,31 @@ Codex's development workflow is separate from ForgeTS's runtime. The internal sp
 
 For a portfolio walkthrough, start with [human input and project direction](docs/human-input.md), then follow the linked specs, ADRs, and [build log](docs/build-log.md) for implementation and verification evidence.
 
-The [milestone spec index](specs/internal/README.md) links M0–M7. [M2 evidence](docs/m2-verification.md) distinguishes actual containment/persistence checks from fake inference and the unperformed live run. M3 and later remain unimplemented.
+Development follows [local milestone integration](docs/adr/0014-local-milestone-integration.md): completed specs are committed, completed verified milestones are merged into local `master`, and the human pushes. Local integration does not bypass runtime approval or the review gate before the next milestone.
+
+The [milestone spec index](specs/internal/README.md) links M0–M7. [M2 evidence](docs/m2-verification.md) and [M3 evidence](docs/m3-verification.md) distinguish actual tools/persistence from fake inference and the unperformed live run. M4 and later remain unimplemented.
 
 ## Setup and verification
 
-### M2 fixture demo
+### Offline sandbox and repair demo
 
 The worker supports Windows with Docker Desktop's Linux amd64 engine and cgroup v2 only; other runtimes fail closed. Acquire the approved pinned image during trusted setup:
 
 ```powershell
+npm ci
 docker pull node@sha256:76d0ed0ed93bed4f4376211e9d8fddac4d8b3fbdb54cc45955696001a3c91152
+npm run worker:prepare
 npm run db:test:up
 $env:FORGETS_ENV = 'test'
 $env:FORGETS_DB_PASSWORD = 'forgets_test_dev_only'
-npm run build
 npm run factory:sandbox -- specs/examples/sandbox-greeting.md demo-greeting-1
+npm run factory:verify -- specs/examples/sandbox-greeting.md repair demo-repair-1
 npm run test:containment -w @forgets/runner
 ```
 
 Run the fixture CLI while the mock API is stopped: they intentionally share one exclusive database owner. A repeated key returns the previous run without replay. The CLI applies additive local migrations and recovers interrupted records/workers; it never resets the database. Output ends at `IMPLEMENTED_UNVERIFIED`, with fake invocation provenance, actual worker outcomes and inspectable before/after artifacts. A `SANDBOX_FAILED`/cleanup error requires inspecting the engine and retained evidence before retrying. The example test database is disposable; no production endpoint or provider credentials belong in this demo. Use a new key after restarting the tmpfs database.
+
+`factory:verify` starts with a deliberately broken type fixture, runs four actual gates, applies one fake-provider repair through Docker and reruns every gate. Success ends at `VERIFIED_AWAITING_REVIEW`, with `mergeReady: false`. The `persistent` scenario demonstrates failure after exactly two repairs (exit code 1); `malformed` and `provider-failure` consume one attempt and stop. [Retained repaired/failed runs](docs/m3-verification.md) show actual source/toolchain hashes, outcomes and durations. `worker:prepare` builds a read-only tool image from locked local dependency bytes without install hooks or build network; stop factory work before rebuilding it. Its bootstrap manifest stays ignored in `.workspaces/`.
 
 ### Development setup
 

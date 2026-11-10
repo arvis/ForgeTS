@@ -1,6 +1,6 @@
 # M3: Actual verification and bounded repair
 
-Status: draft for human review, 2026-11-10. No implementation authorized. Prerequisites: accepted M2 changes and observed containment evidence, then explicit M3 authorization. See [M2](m2-real-agent-sandbox.md) and [the charter](../../docs/PLAN.md).
+Status: offline/fake-provider M3 implemented and locally verified on 2026-11-10. [M3a](m3a-isolated-checks.md) adds real isolated checks and [M3b](m3b-bounded-repair.md) adds durable bounded repair; [evidence](../../docs/m3-verification.md) records actual outcomes. The human explicitly requested local M2/M3 merges, reserving pushes to themselves. M2's paid/live test stays unverified; no live success is implied. Stop for review before M4.
 
 ## Goal
 

@@ -22,7 +22,7 @@ import {
   SandboxExecutionSchema,
 } from '@forgets/contracts';
 import type { Repository } from '@forgets/core';
-import { migration1, migration2 } from './migrations.js';
+import { migration1, migration2, migration3 } from './migrations.js';
 const OWNER_KEY = 714_930_121;
 function poolFor(input: LocalConfig) {
   const config = localConfig({
@@ -102,6 +102,7 @@ export async function migrate(config: LocalConfig): Promise<void> {
         try {
           await client.query(migration1);
           await client.query(migration2);
+          await client.query(migration3);
           await client.query('COMMIT');
         } catch (error) {
           await client.query('ROLLBACK');
@@ -116,6 +117,16 @@ export async function migrate(config: LocalConfig): Promise<void> {
   }
 }
 export class PgRepository implements Repository {
+  async record(run: FactoryRun): Promise<FactoryRun> {
+    this.guard();
+    if (
+      run.mode !== 'sandbox-fixture' ||
+      !run.verification ||
+      !['VERIFYING', 'REPAIRING', 'IMPLEMENTING'].includes(run.state)
+    )
+      fail('VALIDATION');
+    return this.persist(run, run.state, run.outputs, run.report, null, false);
+  }
   private readonly ownership = new AbortController();
   get ownershipSignal() {
     return this.ownership.signal;
@@ -173,10 +184,10 @@ export class PgRepository implements Repository {
         });
         this.owner = client;
         await client.query(
-          'SELECT version FROM factory_migrations WHERE version=2',
+          'SELECT version FROM factory_migrations WHERE version=3',
         );
         const unfinished = await this.pool.query<{ data: unknown }>(
-          "SELECT data FROM factory_runs WHERE state IN ('CREATED','SPEC_VALIDATED','PLANNED','IMPLEMENTING','VERIFYING','REVIEWING')",
+          "SELECT data FROM factory_runs WHERE state IN ('CREATED','SPEC_VALIDATED','PLANNED','IMPLEMENTING','VERIFYING','REVIEWING','REPAIRING')",
         );
         for (const row of unfinished.rows) {
           const run = validated(FactoryRunSchema, row.data);
@@ -192,7 +203,7 @@ export class PgRepository implements Repository {
                 : 'Sandbox execution interrupted; no provider or worker actions replayed.',
             ],
           };
-          const recovered =
+          const recoveredBase =
             run.execution?.tool?.status === 'pending'
               ? {
                   ...run,
@@ -207,6 +218,30 @@ export class PgRepository implements Repository {
                   },
                 }
               : run;
+          const recovered = run.verification
+            ? {
+                ...recoveredBase,
+                verification: {
+                  ...run.verification,
+                  status: 'interrupted' as const,
+                  completedAt: new Date().toISOString(),
+                  rounds: run.verification.rounds.map((round) =>
+                    round.status === 'pending'
+                      ? { ...round, status: 'interrupted' as const }
+                      : round,
+                  ),
+                  repairs: run.verification.repairs.map((repair) =>
+                    repair.status === 'requested'
+                      ? {
+                          ...repair,
+                          status: 'unknown' as const,
+                          error: 'INTERRUPTED' as const,
+                        }
+                      : repair,
+                  ),
+                },
+              }
+            : recoveredBase;
           await this.save(
             recovered,
             'FAILED',
@@ -250,7 +285,7 @@ export class PgRepository implements Repository {
         return { run, created: false };
       }
       const active = await client.query(
-        "SELECT id FROM factory_runs WHERE state IN ('CREATED','SPEC_VALIDATED','PLANNED','IMPLEMENTING','VERIFYING','REVIEWING') LIMIT 1",
+        "SELECT id FROM factory_runs WHERE state IN ('CREATED','SPEC_VALIDATED','PLANNED','IMPLEMENTING','VERIFYING','REVIEWING','REPAIRING') LIMIT 1",
       );
       if (active.rowCount) fail('BUSY');
       const at = new Date().toISOString();
@@ -304,8 +339,18 @@ export class PgRepository implements Repository {
     report: FinalReport | null,
     error: ErrorCode | null,
   ): Promise<FactoryRun> {
+    return this.persist(run, state, outputs, report, error, true);
+  }
+  private async persist(
+    run: FactoryRun,
+    state: State,
+    outputs: StageOutput[],
+    report: FinalReport | null,
+    error: ErrorCode | null,
+    move: boolean,
+  ): Promise<FactoryRun> {
     this.guard();
-    transition(run.state, state);
+    if (move) transition(run.state, state);
     const next = validated(FactoryRunSchema, {
       ...run,
       state,

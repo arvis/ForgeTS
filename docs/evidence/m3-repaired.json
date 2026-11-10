@@ -1,0 +1,501 @@
+{
+  "id": "82953b4a-3ae6-40b9-96c0-5cd25016605b",
+  "key": "m3_repair_9a4645ea-7f5f-4101-a287-3fa60084077c",
+  "inputHash": "fe009a4c1145677be81be0242b71323f6ecdad9fedd043fe5cad30bed6fb6b47",
+  "mode": "sandbox-fixture",
+  "spec": {
+    "title": "Sandbox greeting fixture",
+    "goal": "Demonstrate an inspectable greeting replacement in the approved disposable sample.",
+    "requirements": [
+      "Replace Hello from ForgeTS with Hello from the sandbox.",
+      "Keep all edits in the disposable Docker workspace."
+    ],
+    "acceptanceCriteria": [
+      "Persist the actual before/after artifact and hashes.",
+      "Mark provider inference as a deterministic fixture and code verification as pending."
+    ],
+    "constraints": [
+      "No paid model calls, host edits, generated-code execution or merge approval."
+    ]
+  },
+  "state": "VERIFIED_AWAITING_REVIEW",
+  "version": 23,
+  "createdAt": "2026-11-10T18:47:18.786Z",
+  "updatedAt": "2026-11-10T18:47:38.033Z",
+  "outputs": [],
+  "report": {
+    "mode": "sandbox-fixture",
+    "mergeReady": false,
+    "outcome": "VERIFIED_AWAITING_REVIEW",
+    "outputs": [],
+    "error": null,
+    "limitations": [
+      "Provider/repair responses are deterministic fixtures; no paid model was called.",
+      "Actual sample checks are recorded; review and human approval remain pending M4.",
+      "Passing the fixed registry is limited evidence, not general correctness or security."
+    ]
+  },
+  "execution": {
+    "target": "nest-greeting-v1",
+    "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+    "targetHash": "6ebf60a5f51bc300511514337a17fb69e884a67fae8662757f142b33a5dc3c28",
+    "providerAttempts": 2,
+    "invocations": [
+      {
+        "id": "f82eb1e4-574d-4c8b-a9f8-79b959ed8087",
+        "runId": "82953b4a-3ae6-40b9-96c0-5cd25016605b",
+        "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+        "provider": "openai",
+        "transport": "fake",
+        "model": "fixture-model",
+        "templateVersion": "m2-v1",
+        "stage": "planner",
+        "responseHash": "57584f4d1d734591606d6420f6b92be6818b2a372701428cd81af3eb3fa420ae",
+        "usage": null
+      },
+      {
+        "id": "15a3cee7-d1ed-48dd-8ea4-b9b1c87f7140",
+        "runId": "82953b4a-3ae6-40b9-96c0-5cd25016605b",
+        "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+        "provider": "openai",
+        "transport": "fake",
+        "model": "fixture-model",
+        "templateVersion": "m2-v1",
+        "stage": "implementer",
+        "responseHash": "f8d8720e340f6bec5d9957335499a801fbe908f80357605ef337001013f44d56",
+        "usage": null
+      }
+    ],
+    "plan": {
+      "stage": "planner",
+      "summary": "Fixture greeting replacement",
+      "steps": ["Replace greeting in the approved sample"],
+      "fileChanges": ["src/main.ts"],
+      "testStrategy": ["Generated-code verification remains pending M3"],
+      "risks": ["Fake inference is not live model evidence"]
+    },
+    "implementation": {
+      "stage": "implementer",
+      "summary": "Fixture replacement proposal",
+      "request": {
+        "capability": "replace",
+        "files": [
+          {
+            "path": "src/main.ts",
+            "beforeHash": "dc6d1ae85e449b895c601382ec559207dc612d7682fe84c545bf948a83f726c8",
+            "content": "import 'reflect-metadata';\nimport { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\nimport { pathToFileURL } from 'node:url';\n\n@Controller()\nexport class GreetingController {\n  @Get()\n  greeting(): { message: string } {\n    return { message: 123 };\n  }\n}\n\n@Module({ controllers: [GreetingController] })\nexport class AppModule {}\n\nexport async function bootstrap() {\n  const app = await NestFactory.create(AppModule, { logger: false });\n  await app.listen(4320, '127.0.0.1');\n  return app;\n}\n\nif (\n  process.argv[1] &&\n  import.meta.url === pathToFileURL(process.argv[1]).href\n) {\n  void bootstrap().catch(() => {\n    process.stderr.write('SAMPLE_FAILED\\n');\n    process.exitCode = 1;\n  });\n}\n"
+          }
+        ]
+      }
+    },
+    "tool": {
+      "capability": "replace",
+      "status": "completed",
+      "executed": true,
+      "baseHash": "6ebf60a5f51bc300511514337a17fb69e884a67fae8662757f142b33a5dc3c28",
+      "resultHash": "991756edf2330c7472149f6350fefa41c438d565f0af984a1d074c71daa93a8a",
+      "error": null
+    },
+    "artifact": {
+      "baseHash": "6ebf60a5f51bc300511514337a17fb69e884a67fae8662757f142b33a5dc3c28",
+      "resultHash": "991756edf2330c7472149f6350fefa41c438d565f0af984a1d074c71daa93a8a",
+      "diffHash": "42a2239cface81eab0c408e9363756b7d0872bec3ac035e145b24da715e737e0",
+      "changes": [
+        {
+          "path": "src/main.ts",
+          "before": "import 'reflect-metadata';\nimport { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\nimport { pathToFileURL } from 'node:url';\n\n@Controller()\nexport class GreetingController {\n  @Get()\n  greeting(): { message: string } {\n    return { message: 'Hello from ForgeTS' };\n  }\n}\n\n@Module({ controllers: [GreetingController] })\nexport class AppModule {}\n\nexport async function bootstrap() {\n  const app = await NestFactory.create(AppModule, { logger: false });\n  await app.listen(4320, '127.0.0.1');\n  return app;\n}\n\nif (\n  process.argv[1] &&\n  import.meta.url === pathToFileURL(process.argv[1]).href\n) {\n  void bootstrap().catch(() => {\n    process.stderr.write('SAMPLE_FAILED\\n');\n    process.exitCode = 1;\n  });\n}\n",
+          "after": "import 'reflect-metadata';\nimport { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\nimport { pathToFileURL } from 'node:url';\n\n@Controller()\nexport class GreetingController {\n  @Get()\n  greeting(): { message: string } {\n    return { message: 123 };\n  }\n}\n\n@Module({ controllers: [GreetingController] })\nexport class AppModule {}\n\nexport async function bootstrap() {\n  const app = await NestFactory.create(AppModule, { logger: false });\n  await app.listen(4320, '127.0.0.1');\n  return app;\n}\n\nif (\n  process.argv[1] &&\n  import.meta.url === pathToFileURL(process.argv[1]).href\n) {\n  void bootstrap().catch(() => {\n    process.stderr.write('SAMPLE_FAILED\\n');\n    process.exitCode = 1;\n  });\n}\n",
+          "beforeHash": "dc6d1ae85e449b895c601382ec559207dc612d7682fe84c545bf948a83f726c8",
+          "afterHash": "be8bb2c42296f27de00ec2d0a640f09cb535f55b12d31683788ae94cf1f42347"
+        }
+      ]
+    }
+  },
+  "verification": {
+    "version": "m3-v1",
+    "status": "passed",
+    "initialHash": "991756edf2330c7472149f6350fefa41c438d565f0af984a1d074c71daa93a8a",
+    "currentHash": "e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5",
+    "currentFiles": [
+      {
+        "path": "src/main.ts",
+        "content": "import 'reflect-metadata';\nimport { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\nimport { pathToFileURL } from 'node:url';\n\n@Controller()\nexport class GreetingController {\n  @Get()\n  greeting(): { message: string } {\n    return { message: 'Hello from the sandbox' };\n  }\n}\n\n@Module({ controllers: [GreetingController] })\nexport class AppModule {}\n\nexport async function bootstrap() {\n  const app = await NestFactory.create(AppModule, { logger: false });\n  await app.listen(4320, '127.0.0.1');\n  return app;\n}\n\nif (\n  process.argv[1] &&\n  import.meta.url === pathToFileURL(process.argv[1]).href\n) {\n  void bootstrap().catch(() => {\n    process.stderr.write('SAMPLE_FAILED\\n');\n    process.exitCode = 1;\n  });\n}\n"
+      }
+    ],
+    "toolchainImageId": "sha256:461d48bc1611eb092c3602e7af43972eba5c8c2945287b6784f64a466b11c5e4",
+    "toolchainHash": "623c6dea951aef443a70e0a02d04b0498e0f4d701fe1a4269eb60a9a61507810",
+    "repairAttempts": 1,
+    "startedAt": "2026-11-10T18:47:19.587Z",
+    "completedAt": "2026-11-10T18:47:38.031Z",
+    "rounds": [
+      {
+        "attempt": 0,
+        "inputHash": "991756edf2330c7472149f6350fefa41c438d565f0af984a1d074c71daa93a8a",
+        "status": "complete",
+        "results": [
+          {
+            "errorCode": null,
+            "sourcesChanged": false,
+            "id": "1358d687-acd6-4c97-b1e9-910f0ad16105",
+            "kind": "actual",
+            "registry": "m3-nest-greeting-v1",
+            "check": "format",
+            "attempt": 0,
+            "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+            "inputHash": "991756edf2330c7472149f6350fefa41c438d565f0af984a1d074c71daa93a8a",
+            "imageId": "sha256:461d48bc1611eb092c3602e7af43972eba5c8c2945287b6784f64a466b11c5e4",
+            "toolchainHash": "623c6dea951aef443a70e0a02d04b0498e0f4d701fe1a4269eb60a9a61507810",
+            "commands": [
+              [
+                "/usr/local/bin/node",
+                "/opt/forgets/node_modules/prettier/bin/prettier.cjs",
+                "--config",
+                "/opt/forgets/prettier.json",
+                "--check",
+                "/workspace/src/main.ts"
+              ]
+            ],
+            "exitCode": 0,
+            "signal": null,
+            "timedOut": false,
+            "cancelled": false,
+            "resourceExhausted": false,
+            "stdoutTruncated": false,
+            "stderrTruncated": false,
+            "evidenceAvailable": true,
+            "cleanup": "confirmed",
+            "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+            "stderr": "",
+            "commandsExecuted": 1,
+            "durationMs": 1152,
+            "toolDurationMs": 198,
+            "outcome": "pass"
+          },
+          {
+            "errorCode": null,
+            "sourcesChanged": false,
+            "id": "06686198-0343-4a07-b7ad-a221b5ecac69",
+            "kind": "actual",
+            "registry": "m3-nest-greeting-v1",
+            "check": "lint",
+            "attempt": 0,
+            "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+            "inputHash": "991756edf2330c7472149f6350fefa41c438d565f0af984a1d074c71daa93a8a",
+            "imageId": "sha256:461d48bc1611eb092c3602e7af43972eba5c8c2945287b6784f64a466b11c5e4",
+            "toolchainHash": "623c6dea951aef443a70e0a02d04b0498e0f4d701fe1a4269eb60a9a61507810",
+            "commands": [
+              [
+                "/usr/local/bin/node",
+                "/opt/forgets/node_modules/eslint/bin/eslint.js",
+                "--config",
+                "/opt/forgets/eslint.config.mjs",
+                "--max-warnings",
+                "0",
+                "/workspace/src/main.ts"
+              ]
+            ],
+            "exitCode": 0,
+            "signal": null,
+            "timedOut": false,
+            "cancelled": false,
+            "resourceExhausted": false,
+            "stdoutTruncated": false,
+            "stderrTruncated": false,
+            "evidenceAvailable": true,
+            "cleanup": "confirmed",
+            "stdout": "",
+            "stderr": "",
+            "commandsExecuted": 1,
+            "durationMs": 1853,
+            "toolDurationMs": 940,
+            "outcome": "pass"
+          },
+          {
+            "errorCode": null,
+            "sourcesChanged": false,
+            "id": "22204a87-175e-463d-9378-615ca9b334ca",
+            "kind": "actual",
+            "registry": "m3-nest-greeting-v1",
+            "check": "typecheck",
+            "attempt": 0,
+            "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+            "inputHash": "991756edf2330c7472149f6350fefa41c438d565f0af984a1d074c71daa93a8a",
+            "imageId": "sha256:461d48bc1611eb092c3602e7af43972eba5c8c2945287b6784f64a466b11c5e4",
+            "toolchainHash": "623c6dea951aef443a70e0a02d04b0498e0f4d701fe1a4269eb60a9a61507810",
+            "commands": [
+              [
+                "/usr/local/bin/node",
+                "/opt/forgets/node_modules/typescript/bin/tsc",
+                "--project",
+                "/opt/forgets/tsconfig.json",
+                "--noEmit"
+              ]
+            ],
+            "exitCode": 2,
+            "signal": null,
+            "timedOut": false,
+            "cancelled": false,
+            "resourceExhausted": false,
+            "stdoutTruncated": false,
+            "stderrTruncated": false,
+            "evidenceAvailable": true,
+            "cleanup": "confirmed",
+            "stdout": "src/main.ts(10,14): error TS2322: Type 'number' is not assignable to type 'string'.\n",
+            "stderr": "",
+            "commandsExecuted": 1,
+            "durationMs": 2830,
+            "toolDurationMs": 1926,
+            "outcome": "fail"
+          },
+          {
+            "errorCode": null,
+            "sourcesChanged": false,
+            "id": "4310aa10-625d-488f-a420-ced089c09ae1",
+            "kind": "actual",
+            "registry": "m3-nest-greeting-v1",
+            "check": "test",
+            "attempt": 0,
+            "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+            "inputHash": "991756edf2330c7472149f6350fefa41c438d565f0af984a1d074c71daa93a8a",
+            "imageId": "sha256:461d48bc1611eb092c3602e7af43972eba5c8c2945287b6784f64a466b11c5e4",
+            "toolchainHash": "623c6dea951aef443a70e0a02d04b0498e0f4d701fe1a4269eb60a9a61507810",
+            "commands": [
+              [
+                "/usr/local/bin/node",
+                "/opt/forgets/node_modules/typescript/bin/tsc",
+                "--project",
+                "/opt/forgets/tsconfig.json"
+              ],
+              [
+                "/usr/local/bin/node",
+                "--test",
+                "--test-reporter=/opt/forgets/reporter.mjs",
+                "/opt/forgets/greeting.test.mjs"
+              ]
+            ],
+            "exitCode": 1,
+            "signal": null,
+            "timedOut": false,
+            "cancelled": false,
+            "resourceExhausted": false,
+            "stdoutTruncated": false,
+            "stderrTruncated": false,
+            "evidenceAvailable": true,
+            "cleanup": "confirmed",
+            "stdout": "src/main.ts(10,14): error TS2322: Type 'number' is not assignable to type 'string'.\n",
+            "stderr": "",
+            "commandsExecuted": 1,
+            "durationMs": 2834,
+            "toolDurationMs": 1917,
+            "outcome": "fail"
+          }
+        ]
+      },
+      {
+        "attempt": 1,
+        "inputHash": "e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5",
+        "status": "complete",
+        "results": [
+          {
+            "errorCode": null,
+            "sourcesChanged": false,
+            "id": "f5c3fd47-88fa-40f7-8283-d53ab0327484",
+            "kind": "actual",
+            "registry": "m3-nest-greeting-v1",
+            "check": "format",
+            "attempt": 1,
+            "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+            "inputHash": "e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5",
+            "imageId": "sha256:461d48bc1611eb092c3602e7af43972eba5c8c2945287b6784f64a466b11c5e4",
+            "toolchainHash": "623c6dea951aef443a70e0a02d04b0498e0f4d701fe1a4269eb60a9a61507810",
+            "commands": [
+              [
+                "/usr/local/bin/node",
+                "/opt/forgets/node_modules/prettier/bin/prettier.cjs",
+                "--config",
+                "/opt/forgets/prettier.json",
+                "--check",
+                "/workspace/src/main.ts"
+              ]
+            ],
+            "exitCode": 0,
+            "signal": null,
+            "timedOut": false,
+            "cancelled": false,
+            "resourceExhausted": false,
+            "stdoutTruncated": false,
+            "stderrTruncated": false,
+            "evidenceAvailable": true,
+            "cleanup": "confirmed",
+            "stdout": "Checking formatting...\nAll matched files use Prettier code style!\n",
+            "stderr": "",
+            "commandsExecuted": 1,
+            "durationMs": 1028,
+            "toolDurationMs": 160,
+            "outcome": "pass"
+          },
+          {
+            "errorCode": null,
+            "sourcesChanged": false,
+            "id": "af740bae-0bd9-40ee-b4be-87dd53c251af",
+            "kind": "actual",
+            "registry": "m3-nest-greeting-v1",
+            "check": "lint",
+            "attempt": 1,
+            "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+            "inputHash": "e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5",
+            "imageId": "sha256:461d48bc1611eb092c3602e7af43972eba5c8c2945287b6784f64a466b11c5e4",
+            "toolchainHash": "623c6dea951aef443a70e0a02d04b0498e0f4d701fe1a4269eb60a9a61507810",
+            "commands": [
+              [
+                "/usr/local/bin/node",
+                "/opt/forgets/node_modules/eslint/bin/eslint.js",
+                "--config",
+                "/opt/forgets/eslint.config.mjs",
+                "--max-warnings",
+                "0",
+                "/workspace/src/main.ts"
+              ]
+            ],
+            "exitCode": 0,
+            "signal": null,
+            "timedOut": false,
+            "cancelled": false,
+            "resourceExhausted": false,
+            "stdoutTruncated": false,
+            "stderrTruncated": false,
+            "evidenceAvailable": true,
+            "cleanup": "confirmed",
+            "stdout": "",
+            "stderr": "",
+            "commandsExecuted": 1,
+            "durationMs": 1833,
+            "toolDurationMs": 943,
+            "outcome": "pass"
+          },
+          {
+            "errorCode": null,
+            "sourcesChanged": false,
+            "id": "f83125cd-71dc-4f23-8d22-5a81d52f87d2",
+            "kind": "actual",
+            "registry": "m3-nest-greeting-v1",
+            "check": "typecheck",
+            "attempt": 1,
+            "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+            "inputHash": "e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5",
+            "imageId": "sha256:461d48bc1611eb092c3602e7af43972eba5c8c2945287b6784f64a466b11c5e4",
+            "toolchainHash": "623c6dea951aef443a70e0a02d04b0498e0f4d701fe1a4269eb60a9a61507810",
+            "commands": [
+              [
+                "/usr/local/bin/node",
+                "/opt/forgets/node_modules/typescript/bin/tsc",
+                "--project",
+                "/opt/forgets/tsconfig.json",
+                "--noEmit"
+              ]
+            ],
+            "exitCode": 0,
+            "signal": null,
+            "timedOut": false,
+            "cancelled": false,
+            "resourceExhausted": false,
+            "stdoutTruncated": false,
+            "stderrTruncated": false,
+            "evidenceAvailable": true,
+            "cleanup": "confirmed",
+            "stdout": "",
+            "stderr": "",
+            "commandsExecuted": 1,
+            "durationMs": 2749,
+            "toolDurationMs": 1864,
+            "outcome": "pass"
+          },
+          {
+            "errorCode": null,
+            "sourcesChanged": false,
+            "id": "1002eb9f-7d10-40c7-bf10-f2138397e8e1",
+            "kind": "actual",
+            "registry": "m3-nest-greeting-v1",
+            "check": "test",
+            "attempt": 1,
+            "workspaceId": "1cdfd85d-0b0b-4c44-871c-4710476777e8",
+            "inputHash": "e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5",
+            "imageId": "sha256:461d48bc1611eb092c3602e7af43972eba5c8c2945287b6784f64a466b11c5e4",
+            "toolchainHash": "623c6dea951aef443a70e0a02d04b0498e0f4d701fe1a4269eb60a9a61507810",
+            "commands": [
+              [
+                "/usr/local/bin/node",
+                "/opt/forgets/node_modules/typescript/bin/tsc",
+                "--project",
+                "/opt/forgets/tsconfig.json"
+              ],
+              [
+                "/usr/local/bin/node",
+                "--test",
+                "--test-reporter=/opt/forgets/reporter.mjs",
+                "/opt/forgets/greeting.test.mjs"
+              ]
+            ],
+            "exitCode": 0,
+            "signal": null,
+            "timedOut": false,
+            "cancelled": false,
+            "resourceExhausted": false,
+            "stdoutTruncated": false,
+            "stderrTruncated": false,
+            "evidenceAvailable": true,
+            "cleanup": "confirmed",
+            "stdout": "PASS approved greeting contract\n",
+            "stderr": "",
+            "commandsExecuted": 2,
+            "durationMs": 3217,
+            "toolDurationMs": 2302,
+            "outcome": "pass"
+          }
+        ]
+      }
+    ],
+    "repairs": [
+      {
+        "attempt": 1,
+        "invocationId": "4cac1f8c-2446-41a6-9c42-be652e45d14e",
+        "inputHash": "991756edf2330c7472149f6350fefa41c438d565f0af984a1d074c71daa93a8a",
+        "resultHash": "e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5",
+        "status": "applied",
+        "kind": "fake",
+        "templateVersion": "m3-v1",
+        "usage": null,
+        "output": {
+          "stage": "repair",
+          "summary": "Deterministic fixture repair; inference is simulated",
+          "request": {
+            "capability": "replace",
+            "files": [
+              {
+                "path": "src/main.ts",
+                "beforeHash": "be8bb2c42296f27de00ec2d0a640f09cb535f55b12d31683788ae94cf1f42347",
+                "content": "import 'reflect-metadata';\nimport { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\nimport { pathToFileURL } from 'node:url';\n\n@Controller()\nexport class GreetingController {\n  @Get()\n  greeting(): { message: string } {\n    return { message: 'Hello from the sandbox' };\n  }\n}\n\n@Module({ controllers: [GreetingController] })\nexport class AppModule {}\n\nexport async function bootstrap() {\n  const app = await NestFactory.create(AppModule, { logger: false });\n  await app.listen(4320, '127.0.0.1');\n  return app;\n}\n\nif (\n  process.argv[1] &&\n  import.meta.url === pathToFileURL(process.argv[1]).href\n) {\n  void bootstrap().catch(() => {\n    process.stderr.write('SAMPLE_FAILED\\n');\n    process.exitCode = 1;\n  });\n}\n"
+              }
+            ]
+          }
+        },
+        "outputHash": "21b252f0b1c86e31fb990335c45324b642db1b5b2ff7f48eacbe7e6004a4b43e",
+        "error": null
+      }
+    ],
+    "artifact": {
+      "baseHash": "6ebf60a5f51bc300511514337a17fb69e884a67fae8662757f142b33a5dc3c28",
+      "resultHash": "e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5",
+      "diffHash": "3e70c053c783a33b787e81591ac969bb6981c0361ad4440b29f80c112af1519e",
+      "changes": [
+        {
+          "path": "src/main.ts",
+          "before": "import 'reflect-metadata';\nimport { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\nimport { pathToFileURL } from 'node:url';\n\n@Controller()\nexport class GreetingController {\n  @Get()\n  greeting(): { message: string } {\n    return { message: 'Hello from ForgeTS' };\n  }\n}\n\n@Module({ controllers: [GreetingController] })\nexport class AppModule {}\n\nexport async function bootstrap() {\n  const app = await NestFactory.create(AppModule, { logger: false });\n  await app.listen(4320, '127.0.0.1');\n  return app;\n}\n\nif (\n  process.argv[1] &&\n  import.meta.url === pathToFileURL(process.argv[1]).href\n) {\n  void bootstrap().catch(() => {\n    process.stderr.write('SAMPLE_FAILED\\n');\n    process.exitCode = 1;\n  });\n}\n",
+          "after": "import 'reflect-metadata';\nimport { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\nimport { pathToFileURL } from 'node:url';\n\n@Controller()\nexport class GreetingController {\n  @Get()\n  greeting(): { message: string } {\n    return { message: 'Hello from the sandbox' };\n  }\n}\n\n@Module({ controllers: [GreetingController] })\nexport class AppModule {}\n\nexport async function bootstrap() {\n  const app = await NestFactory.create(AppModule, { logger: false });\n  await app.listen(4320, '127.0.0.1');\n  return app;\n}\n\nif (\n  process.argv[1] &&\n  import.meta.url === pathToFileURL(process.argv[1]).href\n) {\n  void bootstrap().catch(() => {\n    process.stderr.write('SAMPLE_FAILED\\n');\n    process.exitCode = 1;\n  });\n}\n",
+          "beforeHash": "dc6d1ae85e449b895c601382ec559207dc612d7682fe84c545bf948a83f726c8",
+          "afterHash": "94d1fa6cc92d6bad7ec0beb69b0ea773cc02ffb55ffa006b7b0e7f7ab8c0aa4d"
+        }
+      ]
+    }
+  }
+}
