@@ -1,6 +1,6 @@
 # M2: Real provider and sandboxed implementation
 
-Status: draft for human review, 2026-11-10. No M2 implementation or paid call is authorized. Prerequisites: review [M1 evidence](../../docs/m1-verification.md), authorize M2, and approve the implementation ADRs/open decisions below.
+Status: implementation authorized on 2026-11-10 after the human declared planning complete and requested milestone-by-milestone implementation. First increment: [capability policy](m2-capability-policy.md). M2 is incomplete; provider/runtime choices and their implementation ADRs remain to be approved, and no paid call is authorized. Earlier [M1 evidence](../../docs/m1-verification.md) remains available; this authorization does not fabricate a separate M1 review result.
 
 ## Goal and result
 

@@ -1,17 +1,17 @@
 # Internal milestone specifications
 
-Read [the charter](../../docs/PLAN.md), [repository instructions](../../AGENTS.md), and [human input](../../docs/human-input.md) first. A draft records intended work and acceptance criteria; implementation requires explicit human authorization. M1 is complete locally and awaits result review. The human authorized M2–M6 drafting after M1, not implementation.
+Read [the charter](../../docs/PLAN.md), [repository instructions](../../AGENTS.md), and [human input](../../docs/human-input.md) first. A draft records intended work and acceptance criteria; implementation requires explicit human authorization. M1 is complete locally; on 2026-11-10 the human declared planning complete and authorized milestone-by-milestone implementation. M2 is underway and must stop for review before M3. Runtime/provider open decisions and paid-call authorization remain separate.
 
-| Milestone   | Specification                                                        | Current status and review boundary                                                                         |
-| ----------- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| M0          | [Bootstrap](m0-bootstrap.md), [agent workflow](m0-agent-workflow.md) | Implemented foundation; historical evidence retained in the build log.                                     |
-| M1          | [Contracts and orchestration](m1-contracts-orchestration.md)         | Implemented/locally verified; [acceptance evidence](../../docs/m1-verification.md); awaiting human review. |
-| M2          | [Real provider and sandbox](m2-real-agent-sandbox.md)                | Draft; select provider/runtime and prove containment before live code editing.                             |
-| M3          | [Actual verification and repair](m3-verification-repair.md)          | Draft; isolated real checks and at most two repair attempts.                                               |
-| M4          | [Review and human approval](m4-review-human-approval.md)             | Draft; advisory review, immutable evidence, and a separate trusted human decision capability.              |
-| M5          | [Evaluations and portfolio](m5-evaluation-portfolio.md)              | Draft; reproducible positive/negative fixtures and honest demo/evidence.                                   |
-| Optional M6 | [Dashboard and GitHub](m6-dashboard-github.md)                       | Draft; frontend choices pending; every external write needs separate authorization.                        |
-| Optional M7 | [Scaling and load testing](m7-scaling-load-testing.md)               | Draft; larger workload campaigns and measured justification for scaling.                                   |
+| Milestone   | Specification                                                        | Current status and review boundary                                                                                                        |
+| ----------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| M0          | [Bootstrap](m0-bootstrap.md), [agent workflow](m0-agent-workflow.md) | Implemented foundation; historical evidence retained in the build log.                                                                    |
+| M1          | [Contracts and orchestration](m1-contracts-orchestration.md)         | Implemented/locally verified; [acceptance evidence](../../docs/m1-verification.md); awaiting human review.                                |
+| M2          | [Real provider and sandbox](m2-real-agent-sandbox.md)                | Implementation authorized; capability-policy increment underway. Provider/runtime decisions and containment/live evidence remain pending. |
+| M3          | [Actual verification and repair](m3-verification-repair.md)          | Draft; isolated real checks and at most two repair attempts.                                                                              |
+| M4          | [Review and human approval](m4-review-human-approval.md)             | Draft; advisory review, immutable evidence, and a separate trusted human decision capability.                                             |
+| M5          | [Evaluations and portfolio](m5-evaluation-portfolio.md)              | Draft; reproducible positive/negative fixtures and honest demo/evidence.                                                                  |
+| Optional M6 | [Dashboard and GitHub](m6-dashboard-github.md)                       | Draft; frontend choices pending; every external write needs separate authorization.                                                       |
+| Optional M7 | [Scaling and load testing](m7-scaling-load-testing.md)               | Draft; larger workload campaigns and measured justification for scaling.                                                                  |
 
 ## M1 implementation slices
 
