@@ -30,6 +30,7 @@ export type Limits = {
 };
 export class FactoryService {
   private readonly tasks = new Map<string, Promise<FactoryRun>>();
+  private readonly executionFailures = new Map<string, ErrorCode>();
   private readonly controllers = new Map<string, AbortController>();
   private readonly now: () => number;
   private readonly deadlineMs: number;
@@ -78,11 +79,22 @@ export class FactoryService {
           this.tasks.delete(admitted.run.id);
           this.controllers.delete(admitted.run.id);
         })
-        .catch(() => {});
+        .catch((error: unknown) => {
+          this.executionFailures.set(
+            admitted.run.id,
+            error instanceof DomainError ? error.code : 'PERSISTENCE',
+          );
+          if (this.executionFailures.size > 100) {
+            const oldest = this.executionFailures.keys().next().value;
+            if (oldest) this.executionFailures.delete(oldest);
+          }
+        });
     }
     return admitted;
   }
   async wait(id: string): Promise<FactoryRun> {
+    const failure = this.executionFailures.get(id);
+    if (failure) fail(failure);
     return this.tasks.get(id) ?? this.repository.get(id);
   }
   async cancel(id: string): Promise<FactoryRun> {

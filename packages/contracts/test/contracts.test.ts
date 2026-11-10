@@ -63,6 +63,7 @@ await test('reject public bindings, production DB URLs/hosts, ambient PG setting
     { FORGETS_DB_HOST: 'production.example' },
     { DATABASE_URL: 'postgres://secret@remote/db' },
     { PGHOST: 'remote' },
+    { FORGETS_PROVIDER: 'live' },
     { FORGETS_ENV: 'test', FORGETS_DB_NAME: 'forgets' },
   ]) {
     assert.throws(

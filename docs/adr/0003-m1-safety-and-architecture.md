@@ -1,7 +1,7 @@
 # ADR 0003: M1 mock-only execution and bounded orchestration
 
 - Date: 2026-11-09
-- Status: proposed for M1 implementation; documentation requested by the human
+- Status: accepted for M1 implementation by the human's instruction after reading the specs; implemented choices and evidence are in ADR 0004 and the M1 verification record
 - Scope: M1 planning and the prerequisite gate for later real execution
 
 ## Context

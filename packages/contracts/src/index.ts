@@ -277,6 +277,25 @@ export type LocalConfig = {
 export function localConfig(
   env: Record<string, string | undefined>,
 ): LocalConfig {
+  const allowed = new Set([
+    'FORGETS_ENV',
+    'FORGETS_HOST',
+    'FORGETS_PORT',
+    'FORGETS_DB_HOST',
+    'FORGETS_DB_NAME',
+    'FORGETS_DB_USER',
+    'FORGETS_DB_PORT',
+    'FORGETS_DB_PASSWORD',
+  ]);
+  if (
+    Object.keys(env).some(
+      (key) =>
+        key.startsWith('FORGETS_') &&
+        env[key] !== undefined &&
+        !allowed.has(key),
+    )
+  )
+    fail('CONFIG');
   if (
     Object.keys(env).some(
       (key) => (key.startsWith('PG') || key === 'DATABASE_URL') && env[key],

@@ -1,6 +1,6 @@
 # M1: Contracts, persisted orchestration, and a safe mock workflow
 
-Status: implementation authorized by the human on 2026-11-09 after reading the specs. Acceptance evidence remains pending. Stop for review before M2.
+Status: implementation authorized by the human on 2026-11-09 and completed with local acceptance verification on 2026-11-10. Awaiting human review before M2. See [the verification record](../../docs/m1-verification.md) for evidence and limits.
 
 ## Goal
 
@@ -119,4 +119,4 @@ Before allowing generated code or target-repository commands, a separate approve
 
 ## Review checkpoint
 
-Approve scope and defaults before implementation, including the one-run limit, local-only database/API policy, bounded mock data, type-aware linting, recovery semantics, and separation of M1 evidence from M2 containment. The current task completes documentation only. No M1 tests or runtime safeguards have been implemented or verified by writing this spec.
+The human reviewed the specs and authorized M1 implementation. Contracts, mock orchestration, local API/CLI, persistence, typed linting, and the bounded baseline are implemented with recorded local evidence. Review the acceptance record, open dependency findings, one-run policy, recovery semantics, and distinction between mock policy and future containment before authorizing M2. Drafting later milestone specs is separately authorized and does not start their implementation.

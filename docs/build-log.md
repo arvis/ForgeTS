@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-On 2026-11-09 the human explicitly instructed: implement M1 after reading the specs. M1 work is authorized; stop for review before M2. Earlier pending-review statements below describe the historical checkpoints, not the current authorization.
+On 2026-11-09 the human explicitly instructed: implement M1 after reading the specs. M1 is now complete with local verification and awaits human review. The human also requested M2–M6 draft specs after M1; drafting is authorized, later implementation is not. Earlier pending-review statements below describe historical checkpoints.
 
 [Human input and project direction](human-input.md) provides a concise index of the human's substantive questions, directions, and pending decisions. This log records development activity and actual verification.
 
@@ -173,3 +173,25 @@ Codex specified M1c and ran compiled unhappy-path tests against typed service st
 Type-aware ESLint now checks promise handling. A negative lint fixture demonstrated both selected rules firing and a handled equivalent passing. The first lint run identified unused test-fixture parameters and an undeclared Node global in the lint script; these were corrected without weakening the rules. Top-level test registrations are explicitly awaited. Abort listeners/timers are cleaned up after stage completion. Core has no executor, subprocess, provider, or filesystem adapter.
 
 `npm run format` and `npm run verify` exited 0: typed lint plus its negative/positive fixture, dependency-ordered builds, strict typechecks, and 16 unit/smoke tests passed with no skips. M1d will add real transport/persistence end-to-end evidence; mock verification is still explicitly simulated.
+
+## 2026-11-09 — M1d: API, CLI, actual integration and baseline
+
+Codex specified M1d and ran the API/CLI boundary tests against typed stubs; both failed for unimplemented behavior before their adapters were added. The NestJS API uses the same core service as the loopback HTTP CLI, which reads bounded user-selected Markdown data. Responses and stored errors expose fixed codes. There is no approval, provider, arbitrary file path, or executor endpoint. Explicit migration and API startup commands were added; CI now defines a separate PostgreSQL test service and actual integration checks (hosted execution remains unobserved).
+
+Verification found and corrected setup/systemic issues: strict compilation required the explicit Express type package; Node fetch replaced a forged Host header, so that test now uses raw HTTP; a restarted local API caused a stale client socket reset, so restart tests use fresh connections. A new failing configuration case demonstrated that unsupported application overrides were silently ignored; the implemented guard now rejects them. A failing regression also exposed that a late wait could hide an already-rejected background persistence operation; bounded in-memory error tracking now keeps wait failures visible without inventing durable terminal evidence.
+
+Real API/PostgreSQL integration passed 3 tests (the parent workflow plus persisted cancellation and deadline subtests). It submits a mock spec, observes all seven ordered events, checks idempotent/conflicting submissions, reloads an awaiting-review report after API restart, and runs actual CLI inspect/run subprocesses. Real PostgreSQL persistence checks passed 9 tests. Unit/HTTP checks passed 18 tests before the final clean-export pass; no mocked result is presented as real generated-feature verification.
+
+The opt-in baseline ran on the dedicated test database and exited 0. Its raw output is retained in [the evidence file](evidence/m1-baseline.json): 10 warm-ups, 190 measured requests, five clients, about 419 ms measured duration, zero unexpected errors, p50 about 9.97 ms and p95 about 19.66 ms. Responses included 162 reads, 4 accepted, 11 idempotent, 8 expected busy, and 5 expected validation rejections. Only 3 new mock runs completed within the measured interval; all 4 accepted runs were drained/checked afterward. HTTP request rate includes rejections/reads and is not successful-run throughput. A negative invocation with development mode exited 1 (`CONFIG`) before opening a database.
+
+Captured read-only plans used the history index and event primary-key index; state-filtered history chose a sequential scan/sort on the small synthetic fixture. The dataset contained 38 awaiting-review, 17 failed, and 1 cancelled run, including 32 deterministic seed runs and earlier integration fixtures. These observations justify no production-capacity claim. Process CPU/memory combines client and API; database resource metrics were unavailable. Larger load work remains optional M7.
+
+The explicit dependency audit exited 1 with the existing 10 moderate linter/minimatch findings and zero high/critical. An intermediate install printed zero findings; the explicit audit supersedes that summary. No forced override was applied. Final locked export, repository verification, documentation links, and staged checks are pending below. No M2 work, provider spending, deployment, push, or merge occurred.
+
+### 2026-11-10 — Resumed final acceptance
+
+The human asked to continue, with an additional instruction to draft M2–M6 specs after M1. The previous terminal sessions no longer existed, so Codex did not assume their unfinished checks passed. Docker Desktop was restarted and the dedicated test service reached healthy status. Root `npm run verify` exited 0 with 18 unit/HTTP tests, typed lint fixtures, builds, and strict typechecks.
+
+The independent clean export of 71 authored/lock files (no copied `node_modules` or build output) at `C:\Users\viest\AppData\Local\Temp\forgets-m1-b55e3fd806dc48849d04156076dd92f5` ran `npm ci` (223 packages installed, exit 0), `npm run verify` (18 tests, exit 0), and the actual PostgreSQL/API integration commands (9 + 3 checks, exit 0, no skips). The temporary export remains outside the repository. The root Compose configuration, whitespace inspection, and 59 local documentation links passed. The final status/metadata edits are documentation-only; staged checks precede the M1d commit.
+
+M1 is complete for review with the known dependency audit findings and hosted-CI limitation. The Nov 9 raw performance evidence is preserved without claiming a new run on Nov 10. No sandbox, live model, generated-code execution, approval mechanism, push, or deployment has been introduced. The next authorized work is documentation for M2–M6, then a review checkpoint before any M2 implementation.

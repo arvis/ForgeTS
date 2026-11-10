@@ -15,4 +15,6 @@ Use two distinct local PostgreSQL services: demo on 5433 and opt-in test profile
 
 The API binds only to IPv4 loopback, rejects foreign Origin/Host headers, limits JSON bodies, and exposes no approval or executor route. Loopback is not authentication against local software. Dependencies, builds, and tests still execute developer tooling under host permissions. M2 containment remains required before any generated code execution.
 
-References: [M1 spec](../../specs/internal/m1-contracts-orchestration.md), [node-postgres transactions](https://node-postgres.com/features/transactions), [NestJS](https://docs.nestjs.com/first-steps).
+Background persistence failures are retained in a bounded in-memory error map so a late `/wait` cannot silently turn a failed background operation into a seemingly healthy active run. This does not claim a durable terminal state during a database outage; restart recovery remains required. Tests first reproduced the late-wait bug before the fix.
+
+References: [M1 spec](../../specs/internal/m1-contracts-orchestration.md), [verification record](../m1-verification.md), [node-postgres transactions](https://node-postgres.com/features/transactions), [NestJS](https://docs.nestjs.com/first-steps).

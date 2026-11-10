@@ -1,0 +1,7 @@
+# M1d: Local API/CLI and actual acceptance evidence
+
+Implement a NestJS API with strict loopback/Host/Origin/body-size validation and sanitized errors. Expose submit, list, inspect, events, report, wait, and cancel through the shared core service; no arbitrary path, provider, approval, or execution endpoint exists. A CLI reads only the explicitly named Markdown file as bounded data, then calls the loopback service. It rejects unsupported commands and endpoints. API startup owns the database lock and recovers interruptions; explicit migration commands precede startup.
+
+Write negative transport/CLI tests before behavior implementation. Verify API contracts without a database using failing repository traps, and run actual PostgreSQL+NestJS+CLI end-to-end tests, including durable report reload after restart, blocked mutations/live mode, invalid JSON/bodies/paths/cursors, and duplicate semantics. Use typed promise linting and bounded shutdown/network timeouts.
+
+Add a local native-fetch performance script: maximum 5 clients, 200 total requests, 60 seconds; mock-only dedicated test database; report actual request classes, sample counts/latencies/throughput and unavailable metrics honestly. Inspect real read query plans against documented synthetic data. Update CI with an isolated PostgreSQL service, docs/acceptance matrix, build/input logs, and dependency audit evidence. Validate a clean locked installation before marking M1 complete. Stop for human review before M2.

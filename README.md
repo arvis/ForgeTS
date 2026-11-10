@@ -1,18 +1,18 @@
 # ForgeTS
 
-ForgeTS is an independent learning and portfolio project for a small TypeScript agentic software factory. **Current state: M0 foundation only, awaiting human review.** There is no runnable factory, API, CLI, database schema, agent, or sandbox yet. The roadmap is in [docs/PLAN.md](docs/PLAN.md). Repository workflow rules are in [AGENTS.md](AGENTS.md).
+ForgeTS is an independent learning and portfolio project for a small TypeScript agentic software factory. **Current state: M1 mock workflow implemented and locally verified, awaiting human review.** The CLI and local NestJS API persist simulated runs in PostgreSQL. Agent implementation, verification, and review use deterministic fixtures; no generated code is executed. The roadmap is in [docs/PLAN.md](docs/PLAN.md), and workflow rules are in [AGENTS.md](AGENTS.md).
 
 ## Why this exists
 
 The irony is intentional: ChatGPT suggested building an agentic software factory to help its human collaborator learn and demonstrate engineering skills for an application to Levelpath. Codex is now helping implement a factory for coding agents. Eventually, the factory may help improve itself. This is an independent learning project, not a Levelpath product, a production system, or a claim of prior professional factory experience.
 
-Codex's development workflow is separate from ForgeTS's future runtime. The current spec, generated changes, verification evidence, and human review are the first part of the meta-demo; ForgeTS cannot process a feature specification yet.
+Codex's development workflow is separate from ForgeTS's runtime. The internal specs, generated changes, verification evidence, and human review show how the factory was built; ForgeTS itself now processes a separate feature spec through a clearly labelled mock workflow.
 
 For a portfolio walkthrough, start with [human input and project direction](docs/human-input.md), then follow the linked specs, ADRs, and [build log](docs/build-log.md) for implementation and verification evidence.
 
 ## Setup and verification
 
-Use Node 24.x (at least 24.11.0) and npm 11.x. The tested bootstrap versions are Node 24.11.0 and npm 11.6.1; `.nvmrc` and `packageManager` record them. Git is needed for normal repository development. Docker with Compose is optional for M0 checks and required only for the development database commands.
+Use Node 24.x (at least 24.11.0) and npm 11.x. The tested versions are Node 24.11.0 and npm 11.6.1; `.nvmrc` and `packageManager` record them. Git is needed for normal development. Docker Desktop's Linux engine with Compose is required for the documented database, integration tests, and mock demo. Unit verification works without Docker.
 
 From the repository root:
 
@@ -21,56 +21,98 @@ npm ci
 npm run verify
 ```
 
-No API keys, paid calls, Docker daemon, or database are required for baseline verification. `verify` checks formatting, ESLint, strict TypeScript, and then builds and runs the baseline test. The test imports the compiled core package through its ESM export; it proves only that the workspace build/test wiring works. It does not test any factory behavior.
+No API keys or paid calls are required. `verify` checks formatting, builds in dependency order, runs typed ESLint and its negative/positive promise-rule fixture, strict typechecks, and unit/HTTP-boundary tests. Real PostgreSQL integration checks and the opt-in performance baseline are separate commands. Run `build`/`verify` before the CLI, API, migration, or baseline commands.
 
-| Command                | Purpose                                     |
-| ---------------------- | ------------------------------------------- |
-| `npm run format`       | Format authored files                       |
-| `npm run format:check` | Check formatting without changing files     |
-| `npm run lint`         | Run ESLint with zero warnings allowed       |
-| `npm run typecheck`    | Check all workspace TypeScript              |
-| `npm run build`        | Compile all workspace TypeScript            |
-| `npm test`             | Build and run workspace tests               |
-| `npm run verify`       | Run the baseline verification gates         |
-| `npm run db:config`    | Validate Compose without starting Docker    |
-| `npm run db:up`        | Start PostgreSQL and wait for health        |
-| `npm run db:down`      | Stop PostgreSQL, preserving its data volume |
+| Command                           | Purpose                                                  |
+| --------------------------------- | -------------------------------------------------------- |
+| `npm run format`                  | Format authored files                                    |
+| `npm run format:check`            | Check formatting without changing files                  |
+| `npm run lint`                    | Run ESLint with zero warnings allowed                    |
+| `npm run typecheck`               | Check all workspace TypeScript                           |
+| `npm run build`                   | Compile all workspace TypeScript                         |
+| `npm test`                        | Build and run workspace tests                            |
+| `npm run verify`                  | Run the baseline verification gates                      |
+| `npm run test:integration`        | Run actual PostgreSQL, NestJS, and CLI integration tests |
+| `npm run api`                     | Start the local mock API                                 |
+| `npm run factory -- run PATH KEY` | Submit a bounded Markdown file and wait for the report   |
+| `npm run db:migrate`              | Explicitly apply additive local migrations               |
+| `npm run perf`                    | Run the bounded local test-database baseline             |
+| `npm run db:config`               | Validate Compose without starting Docker                 |
+| `npm run db:up`                   | Start PostgreSQL and wait for health                     |
+| `npm run db:down`                 | Stop PostgreSQL, preserving its data volume              |
+| `npm run db:test:up`              | Start the separate tmpfs test database                   |
 
-GitHub Actions is configured to run `npm ci`, `npm run verify`, and `npm run db:config` on Linux. Adding a workflow does not establish that hosted CI has passed. Actual local results and environment limitations are recorded in [the build log](docs/build-log.md).
+GitHub Actions configures its own PostgreSQL test service, locked installation, verification, integration tests, and Compose validation on Linux. Hosted CI has not been observed. Actual local evidence is recorded in [the build log](docs/build-log.md).
 
 At the M0 checkpoint, `npm audit` reports 10 moderate development dependency findings associated with the linter's transitive `minimatch` dependency. These remain unresolved; passing `verify` does not mean the audit passed. The [ADR](docs/adr/0001-m0-foundation.md) records why no forced cross-major override was applied.
 
-## Optional local database
+## Run the mock demo
 
-```sh
+PowerShell, first terminal:
+
+```powershell
 npm run db:config
 npm run db:up
-docker compose exec postgres pg_isready -U forgets -d forgets
-npm run db:down
+$env:FORGETS_ENV = 'development'
+$env:FORGETS_DB_PASSWORD = 'forgets_dev_only'
+npm run db:migrate
+npm run api
 ```
 
-Compose defaults to PostgreSQL 17 at `127.0.0.1:5433`, database/user `forgets`, password `forgets_dev_only`. These are public development credentials. `.env.example` documents optional overrides; copy it to an ignored `.env` if needed. Do not put provider keys in that file or reuse these credentials elsewhere. M0 tooling does not connect to PostgreSQL.
+Second terminal:
 
-The named volume retains data across `db:down`. Existing database volumes retain their original credentials even if `.env` changes. The `postgres:17` tag may receive updates, so image bytes are not pinned. This database container is infrastructure, not the future sandbox for generated code. If Docker Desktop is installed but stopped, configuration validation still works; database startup requires its Linux engine.
+```sh
+npm run factory -- run specs/examples/add-project-api.md portfolio-example-1
+npm run factory -- list
+```
+
+Copy the printed UUID to use `inspect RUN_ID`, `events RUN_ID`, `report RUN_ID`, `wait RUN_ID`, or `cancel RUN_ID` after `npm run factory --`. The stable key makes repeated identical requests return the existing run; reusing it for different content returns a conflict. New distinct submissions return busy while another run executes. Awaiting-review runs release that slot.
+
+The API is `http://127.0.0.1:4310`. It exposes `POST /runs`, `GET /runs`, `GET /runs/:id`, `GET /runs/:id/events`, `GET /runs/:id/report`, `GET /runs/:id/wait`, and `POST /runs/:id/cancel`. Submit JSON with `markdown`, `idempotencyKey`, and optional `mode: "mock"`. The API accepts no filesystem paths. The CLI's optional `FORGETS_API_URL` must be an HTTP IPv4-loopback URL. Lists default to 20 records, capped at 100; API run history uses `cursor` and optional `state`, and events use `after` sequence. Pagination is a live view, with timestamp/ID tie-breaking rather than snapshot guarantees.
+
+Input format is demonstrated in the example: one `# Title`, a `## Goal`, and bullet lists under exact `## Requirements`, `## Acceptance Criteria`, and `## Constraints` headings. Unknown sections and fields fail validation. Limits: 64 KiB input/structured values, 128 KiB HTTP JSON bodies, 20 stage transitions, 30 seconds per mock run, and database operation timeouts no greater than 5 seconds. No repair retries exist in M1.
+
+Development PostgreSQL is fixed to `127.0.0.1:5433`, database/user `forgets`; test PostgreSQL is `127.0.0.1:5434`, database/user `forgets_test`. Public development passwords are `forgets_dev_only` and `forgets_test_dev_only`, respectively. The API/config validator rejects unsupported targets, public bind addresses, arbitrary URLs, ambient `PG*` settings, and unknown `FORGETS_*` overrides. The service reads environment variables directly, without loading `.env`; Compose may read `.env`. Keep Compose's targets consistent with the fixed application policy and never use production credentials or forwarded production ports. Supply `FORGETS_DB_PASSWORD` explicitly. Unix shells can use `export NAME=value` instead of PowerShell syntax.
+
+The demo volume retains data across `db:down`; the test service uses disposable tmpfs storage and separate credentials. Migrations run only by explicit command before startup; there is no reset/drop command. Start only one API owner per database. A competing owner/migration is refused. On restart, interrupted executing runs become `FAILED` with `INTERRUPTED` evidence, while completed awaiting-review reports survive. If the database is unavailable, restore the same local database/migrations and restart; the service cannot claim durable outcomes during an outage. No stage is automatically replayed. The `postgres:17` tag is mutable. These database containers are infrastructure, not code execution sandboxes.
+
+## Integration and bounded performance evidence
+
+```powershell
+npm run db:test:up
+$env:FORGETS_DB_PASSWORD = 'forgets_test_dev_only'
+npm run test:integration
+$env:FORGETS_ENV = 'test'
+npm run perf
+```
+
+Integration tests apply migrations only to the fixed test target, exercise transactions/recovery, and start their own temporary API. Stop other test API owners before running them. The performance command also owns its own test API, seeds 32 deterministic mock runs, inspects read-only query plans, then issues 10 warm-up and 190 measured requests with at most 5 clients and a 60-second cap. It reports actual classifications, p50/p95 latency, successful-run counts, query plans, and combined client/API process resource observations. Database CPU/memory is marked unavailable. Initial measurements establish a baseline; there is no invented performance SLO or production-capacity claim. Performance is opt-in and separate from ordinary CI. M7 contains larger load/scaling work.
+
+Specs and reports are development data: do not paste secrets into them. Stored diagnostics use bounded error codes, not raw exception messages. Authentication, hostile-code containment, real verification/repair, and an enforced human approval mechanism are future work. M1 stops at `AWAITING_HUMAN_APPROVAL` with `mergeReady: false` and offers no approval or publishing command.
 
 ## Architecture and scope
 
 ```text
 AGENTS.md                       Repository-wide development and commit rules
 docs/PLAN.md                    Project charter and milestone roadmap
-specs/internal/m0-bootstrap.md   M0 scope and acceptance criteria
-packages/core/                  Empty runtime boundary + compiled ESM smoke test
+specs/internal/                 Reviewed task specs and acceptance criteria
+packages/contracts/             Zod schemas, Markdown and local configuration policy
+packages/core/                  Typed orchestration and repository port
+packages/agents/                Deterministic mock roles with no execution adapters
+packages/persistence/           PostgreSQL migrations, owner lock, transactions, pages
+apps/api/                       Local NestJS transport
+apps/cli/                       Bounded-file-input HTTP client
 docs/adr/                       Architectural decisions
 docs/threat-model.md             Current and intended trust boundaries
 docs/build-log.md                Agent assistance and actual verification
-.github/workflows/ci.yml         Baseline Linux verification
-compose.yaml                    Optional development PostgreSQL
+.github/workflows/ci.yml         Linux unit/integration workflow (hosted run unobserved)
+compose.yaml                    Separate development and test PostgreSQL
 ```
 
-The root uses npm workspaces (`packages/*` and future `apps/*`), one lockfile, strict NodeNext TypeScript, ESLint, Prettier, and Node's built-in test runner. Only `@forgets/core` exists. Its runtime export is intentionally empty. The [initial ADR](docs/adr/0001-m0-foundation.md) explains the defaults and deferred choices.
+The root uses npm workspaces, one lockfile, strict NodeNext TypeScript, typed ESLint, Prettier, and Node's built-in test runner. The [runtime ADR](docs/adr/0004-m1-runtime-boundaries.md) explains interface boundaries, locking, persistence, and verification choices.
 
-The intended later pipeline is spec validation, planning, isolated implementation, deterministic verification with bounded repairs, advisory review, and a human approval gate. None of those stages is implemented at M0. Host development commands execute trusted bootstrap tooling; they do not establish isolation for untrusted generated code. See the [threat model](docs/threat-model.md).
+The current pipeline validates a real spec, persists transitions, and simulates planning, implementation, verification, and advisory review. Later milestones add a strong execution boundary, real verification/repair, and enforced human approval. Host development commands execute trusted tooling under host permissions. See the [threat model](docs/threat-model.md).
 
 ## Review checkpoint
 
-Review the [M0 specification](specs/internal/m0-bootstrap.md), ADR, changes, and build log before authorizing M1. The [M1 draft](specs/internal/m1-contracts-orchestration.md) proposes contracts, orchestration, persistence, and a simulated CLI/API workflow, with safeguards, scaling limits, type-aware linting, and an explicit gate before real execution. M1 implementation has not started. There are no factory evaluation metrics or security guarantees to report yet.
+The human authorized M1 after reading the specs. Review the [M1 specification](specs/internal/m1-contracts-orchestration.md), [verification record](docs/m1-verification.md), ADRs, and commits before authorizing M2. Local verification passed 18 unit/HTTP tests and 12 PostgreSQL/end-to-end checks, including a clean locked export; the small load baseline and open audit findings are recorded separately. Hosted CI remains unobserved. No M2 implementation, provider spending, push, merge, or deployment is authorized by M1 completion.

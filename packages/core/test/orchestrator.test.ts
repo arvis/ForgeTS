@@ -157,6 +157,8 @@ await test('unavailable persistence rejects without claiming a durable final rep
   const service = new FactoryService(repo, good);
   const { run } = await service.submit(input());
   await assert.rejects(service.wait(run.id), { message: 'PERSISTENCE' });
+  await new Promise<void>((resolve) => setImmediate(resolve));
+  await assert.rejects(service.wait(run.id), { message: 'PERSISTENCE' });
   assert.equal(repo.run?.report, null);
 });
 await test('cancellation stops a hung trusted mock and no later stage executes', async () => {

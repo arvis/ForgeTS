@@ -4,6 +4,10 @@
 
 On 2026-11-09 the human stated that they had read the specs and explicitly requested M1 implementation. This supersedes historical entries below that say M0 review/M1 authorization are pending. Codex is implementing M1 under the reviewed specifications and must stop before M2; approval of the completed M1 result has not yet been given.
 
+## Decision update — 2026-11-10: Finish M1, then document M2–M6
+
+The human requested draft specs for M2 through M6 after completing M1, then asked Codex to continue. M1 has now passed its local unit/integration and clean-install checks; result approval remains pending. The later milestone drafts are authorized documentation, with no authority to implement M2–M6, contact production, spend provider credits, push, or deploy. Remaining audit findings and unobserved hosted CI are visible in [the M1 acceptance record](m1-verification.md).
+
 This record summarizes substantive questions and instructions from the human collaborator, with the changes or proposals they prompted. Entries are paraphrases of the conversation on 2026-11-09. The development agent maintains this record; implementation evidence is in the linked specs, ADRs, [build log](build-log.md), and Git commits. A question records review input; milestone approval requires an explicit instruction.
 
 ## Implemented workflow and documented requirements

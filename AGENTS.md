@@ -28,7 +28,7 @@ Read [the project charter](docs/PLAN.md) before starting work. Paths inside the 
 - If a required check fails or is blocked, report it and leave the spec incomplete unless the human explicitly accepts the exception. Do not bypass checks to manufacture a completed spec.
 - Do not push, merge, deploy, spend provider API credits, or access external repositories without explicit human authorization.
 - A local commit records work; it does not imply human approval. Stop at milestone review gates and do not start the next milestone until the human authorizes it.
-- Current checkpoint: the human explicitly authorized M1 implementation on 2026-11-09 after reading the specs. Implement M1 only and stop for review before M2.
+- Current checkpoint: M1 implementation is complete and awaits human review. The human requested M2–M6 draft specifications after M1; documentation is authorized, implementation of M2 or later is not.
 
 ## Architecture and trust boundaries
 
