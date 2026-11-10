@@ -40,12 +40,14 @@ This policy is for Codex developing ForgeTS; it does not configure the factory's
 
 ## Local commits and human review
 
+- Keep `master` and start milestone work on a descriptive local topic branch from its current integrated state. Preserve unrelated changes and existing history; document any explicitly authorized stacked dependency rather than silently merging or rewriting it.
 - After completing each spec and passing its required checks, create a local Git commit containing the spec, its implementation, tests where applicable, and build-log evidence.
 - Inspect the staged diff before committing. Include only changes belonging to that spec; never commit secrets, generated output, or unrelated user changes.
 - If a required check fails or is blocked, report it and leave the spec incomplete unless the human explicitly accepts the exception. Do not bypass checks to manufacture a completed spec.
-- Do not push, merge, deploy, spend provider API credits, or access external repositories without explicit human authorization.
-- A local commit records work; it does not imply human approval. Stop at milestone review gates and do not start the next milestone until the human authorizes it.
-- Current checkpoint: the human explicitly authorized M3 on 2026-11-10 after the M2 review handoff. Implement isolated verification and at most two repairs, then stop for review before M4. M2 live acceptance stays unverified and paid testing blocked; moving to M3 does not relabel that test as passed. M3 is on a stacked local branch from unmerged M2; no merge/push is authorized. Record observed development token usage after milestones; mark unavailable counts and remaining account allowance percentages explicitly rather than estimate.
+- After finishing each milestone and passing its required checks, commit all milestone changes and merge its topic branch into local `master`. The human explicitly authorized this standing local workflow on 2026-11-10; do not ask again for that local merge. Inspect staged scope and follow [the integration decision](docs/adr/0014-local-milestone-integration.md). A failed/blocked gate still blocks completion unless the human explicitly authorizes integrating the documented exception.
+- The human will push to the remote themselves. Do not push, create remote PRs, deploy, spend provider API credits or access external repositories without separate explicit authorization.
+- Local commits/merges record development work; they do not approve generated target code or the next milestone. Stop at milestone review gates until the human authorizes further implementation.
+- Current checkpoint: M3's offline verification/bounded repair is implemented and locally verified. The human explicitly authorized local M2/M3 integration; M2 live acceptance remains unperformed and paid testing blocked. Stop before M4. Record observed development token usage after milestones; mark unavailable counts and remaining account allowance percentages explicitly rather than estimate.
 
 ## Architecture and trust boundaries
 

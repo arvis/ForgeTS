@@ -10,6 +10,8 @@ Codex's development workflow is separate from ForgeTS's runtime. The internal sp
 
 For a portfolio walkthrough, start with [human input and project direction](docs/human-input.md), then follow the linked specs, ADRs, and [build log](docs/build-log.md) for implementation and verification evidence.
 
+Development follows [local milestone integration](docs/adr/0014-local-milestone-integration.md): completed specs are committed, completed verified milestones are merged into local `master`, and the human pushes. Local integration does not bypass runtime approval or the review gate before the next milestone.
+
 The [milestone spec index](specs/internal/README.md) links M0–M7. [M2 evidence](docs/m2-verification.md) and [M3 evidence](docs/m3-verification.md) distinguish actual tools/persistence from fake inference and the unperformed live run. M4 and later remain unimplemented.
 
 ## Setup and verification

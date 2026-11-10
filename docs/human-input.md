@@ -47,6 +47,10 @@ The human then directed Codex to continue. Codex completed the offline integrati
 
 After reading the M2 evidence and its live-test limitation, the human explicitly instructed Codex to continue to M3. Codex treats this as permission for offline isolated verification and bounded fake-provider repair, preserving the unperformed M2 live result and blocked paid calls. [ADR 0012](adr/0012-m3-verification-budgets.md) records tool preparation and conservative budgets; [M3a](../specs/internal/m3a-isolated-checks.md) defines the first increment. A stacked local branch preserves the unmerged M2 dependency without changing `master`; there is no push/merge or M4 authorization. Development tokens and remaining quota percentage remain unavailable rather than estimated.
 
+## Decision update — 2026-11-10: Standing local milestone merges
+
+The human explicitly directed Codex to finish M3, merge M2/M3 into `master`, and record that every completed milestone must be committed and merged locally. They reserved remote pushing to themselves. [ADR 0014](adr/0014-local-milestone-integration.md) and [the workflow spec](../specs/internal/milestone-local-integration.md) implement this as standing local merge authorization after required checks. The known M2 live-test limitation remains recorded rather than relabeled as a pass; neither this instruction nor local integration authorizes M4, paid calls, remote writes or runtime approval of generated sample code.
+
 ## Maintenance
 
 Record new substantive human questions, constraints, requested changes, and explicit decisions, linking to their resulting artifacts. Identify who proposed a choice and whether it was accepted, documented, implemented, or verified. Preserve historical entries and record later decisions as updates. Keep the record focused on engineering input and avoid unrelated personal details or claims of unobserved human review.
