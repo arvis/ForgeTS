@@ -192,26 +192,31 @@ Report fixture pass rate, invalid-output detection, retry outcomes, elapsed time
 - **Done when:** a mock run has persisted transitions, structured outputs, and a final report.
 
 ### M2 — Real agent and sandboxed tools
+- Draft implementation spec: [M2](../specs/internal/m2-real-agent-sandbox.md).
 - Add one real LLM provider behind an interface.
 - Add secure, isolated workspace creation and constrained tool execution.
 - Implement planner and implementer with validated responses.
 - **Done when:** an opt-in live run can generate a small code change in isolation without unrestricted host execution.
 
 ### M3 — Verification and bounded repair
+- Draft implementation spec: [M3](../specs/internal/m3-verification-repair.md).
 - Run real lint/typecheck/tests inside the isolated environment.
 - Add bounded repair loop and terminal failure behavior.
 - **Done when:** a deliberately broken change is detected and either repaired or safely rejected with evidence.
 
 ### M4 — Review and approval
+- Draft implementation spec: [M4](../specs/internal/m4-review-human-approval.md).
 - Add structured reviewer, human approval gate, diff/report export.
 - **Done when:** no unverified or unapproved change is presented as ready to merge.
 
 ### M5 — Evaluation and portfolio polish
+- Draft implementation spec: [M5](../specs/internal/m5-evaluation-portfolio.md).
 - Implement at least five negative/positive eval fixtures.
 - Add CI, demo walkthrough, screenshots or terminal recording, architecture diagram, and honest limitations.
 - **Done when:** a recruiter can clone the repository, run mock demos without API keys, and understand what the factory guarantees and does not guarantee.
 
 ### Optional M6 — Dashboard and GitHub integration
+- Draft implementation spec: [M6](../specs/internal/m6-dashboard-github.md).
 - React run-history dashboard.
 - GitHub PR preparation after explicit human approval and permission checks.
 - Additional provider support and comparative evaluations.

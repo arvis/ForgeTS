@@ -8,6 +8,8 @@ On 2026-11-09 the human stated that they had read the specs and explicitly reque
 
 The human requested draft specs for M2 through M6 after completing M1, then asked Codex to continue. M1 has now passed its local unit/integration and clean-install checks; result approval remains pending. The later milestone drafts are authorized documentation, with no authority to implement M2–M6, contact production, spend provider credits, push, or deploy. Remaining audit findings and unobserved hosted CI are visible in [the M1 acceptance record](m1-verification.md).
 
+The requested [M2–M6 drafts are now indexed](../specs/internal/README.md), with their acceptance criteria and open decisions. The human identified the missing specs and set the sequence (finish M1 first); Codex supplied the proposed designs and verification plans. No human approval of those designs or later implementation is implied.
+
 This record summarizes substantive questions and instructions from the human collaborator, with the changes or proposals they prompted. Entries are paraphrases of the conversation on 2026-11-09. The development agent maintains this record; implementation evidence is in the linked specs, ADRs, [build log](build-log.md), and Git commits. A question records review input; milestone approval requires an explicit instruction.
 
 ## Implemented workflow and documented requirements

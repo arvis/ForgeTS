@@ -10,6 +10,8 @@ Codex's development workflow is separate from ForgeTS's runtime. The internal sp
 
 For a portfolio walkthrough, start with [human input and project direction](docs/human-input.md), then follow the linked specs, ADRs, and [build log](docs/build-log.md) for implementation and verification evidence.
 
+The [milestone spec index](specs/internal/README.md) links M0–M7, including the requested M2–M6 drafts. These drafts define future acceptance criteria; only M0/M1 have been implemented, and M1 result review remains pending.
+
 ## Setup and verification
 
 Use Node 24.x (at least 24.11.0) and npm 11.x. The tested versions are Node 24.11.0 and npm 11.6.1; `.nvmrc` and `packageManager` record them. Git is needed for normal development. Docker Desktop's Linux engine with Compose is required for the documented database, integration tests, and mock demo. Unit verification works without Docker.

@@ -195,3 +195,19 @@ The human asked to continue, with an additional instruction to draft M2–M6 spe
 The independent clean export of 71 authored/lock files (no copied `node_modules` or build output) at `C:\Users\viest\AppData\Local\Temp\forgets-m1-b55e3fd806dc48849d04156076dd92f5` ran `npm ci` (223 packages installed, exit 0), `npm run verify` (18 tests, exit 0), and the actual PostgreSQL/API integration commands (9 + 3 checks, exit 0, no skips). The temporary export remains outside the repository. The root Compose configuration, whitespace inspection, and 59 local documentation links passed. The final status/metadata edits are documentation-only; staged checks precede the M1d commit.
 
 M1 is complete for review with the known dependency audit findings and hosted-CI limitation. The Nov 9 raw performance evidence is preserved without claiming a new run on Nov 10. No sandbox, live model, generated-code execution, approval mechanism, push, or deployment has been introduced. The next authorized work is documentation for M2–M6, then a review checkpoint before any M2 implementation.
+
+## 2026-11-10 — M2–M6 specification drafts
+
+### Human direction and agent involvement
+
+After M1 the human requested the missing M2 through M6 specs, then instructed Codex to continue. Codex completed and committed M1d as `ea56b1b` before drafting these documents. It wrote [the planning task spec](../specs/internal/roadmap-m2-m6-drafts.md), then five milestone drafts with prerequisites, boundaries, implementation sequence, unhappy-path-first acceptance criteria, actual verification requirements, open decisions, and review gates. No sub-agents were used and no later runtime code was written.
+
+The [spec index](../specs/internal/README.md), roadmap, and README now make the drafts discoverable. [ADR 0005](adr/0005-milestone-handoffs.md) records proposed evidence/capability handoffs: real isolation before edits, actual checks before eligibility, advisory review plus a trusted artifact-bound human decision, and separately authorized publication. Drafts preserve historical mock provenance and carry explicit migration requirements. The optional frontend stack/provider/runtime/publisher choices remain unapproved; no release versions or performance results were invented.
+
+M2 specifies actual negative containment tests before a live change, with provider credentials outside workers and no host fallback. M3 fixes the maximum at two repairs and requires fresh actual verification for changed artifacts. M4 binds decisions to current evidence/digests without giving approval to models or a UI. M5 requires at least five distinct reproducible evaluation cases with truthful results. Optional M6 covers a browser-safe contract boundary, local accessible UI, and separately authorized GitHub operations using a fake publisher first. M7 remains independent scaling/load work.
+
+### Verification and review
+
+`npm run format` and `npm run format:check` exited 0. One-off Node verification passed all 107 final local Markdown links, with no local fragment targets; only the 12 intended documentation files changed, and the charter differs only by its five new draft links. Unstaged whitespace checks passed; staged diff/scope/whitespace are inspected before committing this completed planning task separately from M1d.
+
+No runtime/dependency/tooling files changed during drafting, so M1 runtime checks were not repeated for documentation-only changes. All M2–M6 drafts remain unimplemented and require explicit authorization. M1 awaits human result review. The dedicated test PostgreSQL service remains running for inspection; the API instances used by tests shut down. No live provider call, GitHub write, push, merge, or deployment occurred.
