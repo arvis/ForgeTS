@@ -93,15 +93,15 @@ export class ResponsesProvider implements Provider {
     this.config = parsed.data;
     this.context = identity.data;
     this.fake = transport !== undefined;
-    this.transport = transport ?? ((url, init) => fetch(url, init));
+    this.transport =
+      transport ?? (() => Promise.reject(new Error('PROVIDER_DISABLED')));
   }
   async invoke(
     input: ProviderInput,
     signal: AbortSignal,
   ): Promise<ProviderReply> {
     if (signal.aborted) throw new Error('PROVIDER_CANCELLED');
-    if (!this.fake && !this.config.allowPaid)
-      throw new Error('PROVIDER_DISABLED');
+    if (!this.fake) throw new Error('PROVIDER_DISABLED');
     if (this.busy) throw new Error('PROVIDER_BUSY');
     if (this.attempts >= 2) throw new Error('PROVIDER_BUDGET');
     let clean: ProviderInput;

@@ -62,3 +62,7 @@ The human requested task-aware Codex model/effort preferences, single-primary or
 ## Decision update — 2026-11-09: M7 load testing
 
 The human explicitly instructed Codex to add load testing to M7. This supersedes the earlier table entries describing M7 as absent from the charter and later performance placement as undecided: the roadmap now includes optional M7, with [a linked draft](../specs/internal/m7-scaling-load-testing.md) covering load/stress/spike/soak profiles, measured capacity, backpressure, and failure recovery. M1 retains its small baseline. This is authorization to document the milestone, not to implement it; detailed scaling architecture and the frontend stack remain proposals, and M0 review remains pending.
+
+## 2026-11-10: Keep ForgeTS free
+
+The human directed that ForgeTS remain a free pet project after refusing paid live tests. This revises M2 acceptance to fake inference with actual isolated tool evidence and constrains future milestones to free/offline operation. See [task spec](../specs/internal/free-pet-project.md) and [ADR 0015](adr/0015-free-pet-project.md). No spending or model downloads are authorized.

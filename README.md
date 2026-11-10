@@ -1,6 +1,6 @@
 # ForgeTS
 
-ForgeTS is an independent learning and portfolio project for a small TypeScript agentic software factory. **Current state: M1, M2's offline workflow and M3's isolated verification/bounded repair are implemented and locally verified; M2 live acceptance remains unperformed.** The local NestJS API persists simulated M1 runs. Fixture CLIs drive real Docker edits, actual target checks and at most two fake-provider repairs with durable evidence. Generated code executes only inside workers; the CLIs enable no paid calls or approval. The roadmap is in [docs/PLAN.md](docs/PLAN.md), and workflow rules are in [AGENTS.md](AGENTS.md).
+ForgeTS is an independent learning and portfolio project for a small TypeScript agentic software factory. **Current state: M1, M2's offline workflow and M3's isolated verification/bounded repair are implemented and locally verified; M2 uses revised free/offline acceptance; live inference is outside scope.** The local NestJS API persists simulated M1 runs. Fixture CLIs drive real Docker edits, actual target checks and at most two fake-provider repairs with durable evidence. Generated code executes only inside workers; the CLIs enable no paid calls or approval. ForgeTS requires no paid APIs, subscriptions or hosted services. Paid opt-in is rejected and native dispatch is disabled; see [ADR 0015](docs/adr/0015-free-pet-project.md). The roadmap is in [docs/PLAN.md](docs/PLAN.md), and workflow rules are in [AGENTS.md](AGENTS.md).
 
 ## Why this exists
 

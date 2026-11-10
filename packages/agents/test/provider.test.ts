@@ -56,6 +56,23 @@ const response = (
   );
 const fake: Transport = () => Promise.resolve(response());
 
+await test('rejects paid opt-in before any injected transport can execute', () => {
+  let calls = 0;
+  const transport: Transport = () => {
+    calls++;
+    return Promise.resolve(response());
+  };
+  assert.throws(
+    () =>
+      new ResponsesProvider(
+        { ...config, allowPaid: true },
+        context(),
+        transport,
+      ),
+    /^Error: PROVIDER_CONFIG$/,
+  );
+  assert.equal(calls, 0);
+});
 await test('rejects escaped credential echoes after parsing structured output', async () => {
   const escaped = key
     .split('')

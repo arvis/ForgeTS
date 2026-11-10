@@ -2,6 +2,8 @@
 
 > **The irony is intentional:** ChatGPT proposed this project to help its human collaborator demonstrate agentic software factory skills for a software engineering role at **Levelpath**. We are now asking Codex, another coding agent, to build a factory for coding agents. The factory should eventually help build and improve itself. An AI suggested an AI factory so a human can get hired to work with AI factories. Keep this origin story in the README; don't pretend this was a production system.
 
+Free pet-project requirement: no paid APIs, subscriptions, hosted infrastructure or purchases. All future milestones inherit this constraint. See [ADR 0015](adr/0015-free-pet-project.md).
+
 ## 1. Purpose
 
 Build a portfolio-quality, small but credible **TypeScript agentic software factory** that takes a Markdown feature specification, plans changes, implements them in an isolated workspace, runs deterministic checks, attempts bounded repairs, produces a review report, and waits for human approval before preparing a pull request.
@@ -43,7 +45,7 @@ Build a portfolio-quality, small but credible **TypeScript agentic software fact
 - NestJS API for starting and inspecting runs; CLI as the primary entry point.
 - PostgreSQL persistence, migrations, and Docker Compose for local infrastructure.
 - Zod contracts for all agent inputs/outputs and run transitions.
-- Pluggable LLM provider interface; start with **one** real provider and a deterministic mock provider for tests.
+- Typed provider interface with deterministic offline fixtures; native/billable calls are outside scope.
 - Planner, implementer, reviewer, and repair **roles**; they can share the same model/provider.
 - Isolated execution workspace, command allowlist, timeouts, output limits, retry limits, and explicit file path policies.
 - Deterministic verification pipeline.
@@ -162,7 +164,7 @@ Keep large artifacts (diffs, logs, generated reports) in an artifact directory w
 
 ## 9. Evaluation strategy
 
-Use deterministic fixtures and a mock model to make tests fast, inexpensive, and repeatable. Add opt-in live-model evaluations later.
+Use deterministic fixtures and a mock model to make tests fast, inexpensive, and repeatable. Keep evaluations offline and deterministic.
 
 Initial scenarios:
 
@@ -193,10 +195,10 @@ Report fixture pass rate, invalid-output detection, retry outcomes, elapsed time
 
 ### M2 — Real agent and sandboxed tools
 - Draft implementation spec: [M2](../specs/internal/m2-real-agent-sandbox.md).
-- Add one real LLM provider behind an interface.
+- Add a typed provider adapter exercised with deterministic fake transport.
 - Add secure, isolated workspace creation and constrained tool execution.
 - Implement planner and implementer with validated responses.
-- **Done when:** an opt-in live run can generate a small code change in isolation without unrestricted host execution.
+- **Done when:** a fake-provider run produces a real small code change in isolation without unrestricted host execution; live inference is outside scope.
 
 ### M3 — Verification and bounded repair
 - Draft implementation spec: [M3](../specs/internal/m3-verification-repair.md).
@@ -224,7 +226,7 @@ Report fixture pass rate, invalid-output detection, retry outcomes, elapsed time
 ### Optional M7 — Scaling and load testing
 - Preserve M1's small API/database baseline; define average-load, stress, spike, and soak profiles for larger workloads and any justified multi-worker design.
 - Evaluate bounded concurrency, durable jobs, worker ownership/recovery, idempotency, cancellation, and backpressure before increasing operational concurrency.
-- Use disposable test environments and deterministic mock providers by default, with explicit request/duration/resource budgets and abort conditions. Exclude production targets and credentials; paid provider tests require separate authorization.
+- Use disposable test environments and deterministic mock providers by default, with explicit request/duration/resource budgets and abort conditions. Exclude production targets and credentials; paid provider tests are outside scope.
 - Record latency percentiles, successful-run throughput, expected rejections, unexpected errors, queue/resource measurements where applicable, and state/event/isolation correctness under load.
 - Retain reproducible scripts, workload/environment details, raw results, and thresholds chosen before measurement. See `specs/internal/m7-scaling-load-testing.md` for the draft acceptance criteria.
 - **Done when:** actual bounded load-test results establish the tested operating limits and recovery behavior, preserve correctness and isolation, and support a human-reviewed scaling decision. This roadmap entry does not authorize implementation.
