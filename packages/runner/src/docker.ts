@@ -100,6 +100,22 @@ function docker(
     if (signal?.aborted) abort();
   });
 }
+async function removeWorker(name: string): Promise<void> {
+  try {
+    await docker(['rm', '--force', name]);
+    const remaining = await docker([
+      'ps',
+      '--all',
+      '--quiet',
+      '--filter',
+      `name=^/${name}$`,
+    ]);
+    if (remaining.trim()) throw new Error('WORKER_CLEANUP');
+  } catch {
+    cleanupFailed = true;
+    throw new Error('WORKER_CLEANUP');
+  }
+}
 // Internal test/control-plane primitive. Never exported as a model capability.
 export async function executeTrustedWorker(
   code: string,
@@ -142,20 +158,7 @@ export async function executeTrustedWorker(
     );
   } finally {
     try {
-      if (creationAttempted) {
-        await docker(['rm', '--force', name]);
-        const remaining = await docker([
-          'ps',
-          '--all',
-          '--quiet',
-          '--filter',
-          `name=^/${name}$`,
-        ]);
-        if (remaining.trim()) throw new Error('WORKER_CLEANUP');
-      }
-    } catch {
-      cleanupFailed = true;
-      throw new Error('WORKER_CLEANUP');
+      if (creationAttempted) await removeWorker(name);
     } finally {
       busy = false;
     }

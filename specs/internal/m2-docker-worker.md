@@ -1,6 +1,6 @@
 # M2 disposable Docker worker
 
-Status: specified before implementation, 2026-11-10. The human approved pulling and pinning the official Node 24.11.0 Bookworm slim image and requested fake provider tests with paid tests blocked.
+Status: worker increment implemented and locally verified, 2026-11-10; M2 incomplete. The human approved pulling and pinning the official Node 24.11.0 Bookworm slim image and requested fake provider tests with paid tests blocked.
 
 ## Scope and acceptance
 
@@ -11,3 +11,7 @@ Status: specified before implementation, 2026-11-10. The human approved pulling 
 - Validate all requests before container creation. Materialize only validated source records in fresh tmpfs with exclusive/no-follow regular-file operations and no simultaneously running generated code. Apply replacements inside the worker and compare returned data with the trusted expected snapshot. Reject mismatched/malformed output.
 - Write unhappy-path tests before behavior. Run actual Linux-worker tests for network denial against a controlled host test service, absent credential canaries/socket, non-root/read-only restrictions, enforced disk/memory/PID/CPU settings, output/time/cancellation limits, descendant termination, unchanged disposable host canary, regular-file operations and cleanup. Configuration inspection alone is not a runtime containment result.
 - Run `npm run verify`, worker integration checks, and existing PostgreSQL integration checks. Record digest, engine/kernel/runtime, exact outcomes and gaps. No paid provider request, external Git access, push or merge. Commit only after required checks pass; M2 remains incomplete until full integration and live acceptance evidence or an explicit scope exception.
+
+## Observed evidence
+
+The three unit tests and six containment checks failed against compiling missing-behavior placeholders before implementation. After implementation, `npm run verify` passed all 26 unit/HTTP tests, formatting, build, lint and strict typechecking. The containment command passed all six checks, and `npm run test:integration` passed all 12 existing PostgreSQL/API integration checks using the disposable test database. See [M2 verification](../../docs/m2-verification.md) for the exact environment, remaining acceptance gaps and paid-call restriction.

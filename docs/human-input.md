@@ -39,9 +39,9 @@ This record summarizes substantive questions and instructions from the human col
 
 The human said planning was complete and directed milestone-by-milestone implementation, requesting token usage and remaining allowance percentage after each milestone. Codex starts M2 and retains the review stop before M3. [The capability-policy increment](../specs/internal/m2-capability-policy.md) and [ADR 0008](adr/0008-m2-capability-policy.md) record the first implementation boundary. This is milestone implementation authorization, not permission for provider charges or remote operations. Codex account usage/remaining percentage are unavailable to the current session; runtime provider tokens, when reported, will be identified separately. Docker image acquisition and provider/model/live-test budget were asked separately; no answer is inferred.
 
-## Maintenance
-
 The human subsequently approved the official Node worker image and instructed Codex to use fake provider tests while leaving paid testing blocked. [ADR 0009](adr/0009-m2-docker-worker.md) and [the worker spec](../specs/internal/m2-docker-worker.md) record the selected boundary. This permits the image pull and runtime containment tests; it does not establish a completed live run or authorize provider charges.
+
+## Maintenance
 
 Record new substantive human questions, constraints, requested changes, and explicit decisions, linking to their resulting artifacts. Identify who proposed a choice and whether it was accepted, documented, implemented, or verified. Preserve historical entries and record later decisions as updates. Keep the record focused on engineering input and avoid unrelated personal details or claims of unobserved human review.
 
