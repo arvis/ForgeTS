@@ -26,3 +26,12 @@ CREATE TABLE IF NOT EXISTS factory_events (
 );
 INSERT INTO factory_migrations(version) VALUES (1) ON CONFLICT DO NOTHING;
 `;
+export const migration2 = `
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM factory_migrations WHERE version=2) THEN
+    ALTER TABLE factory_runs DROP CONSTRAINT factory_runs_state_check;
+    ALTER TABLE factory_runs ADD CONSTRAINT factory_runs_state_check CHECK (state IN ('CREATED','SPEC_VALIDATED','PLANNED','IMPLEMENTING','VERIFYING','REVIEWING','AWAITING_HUMAN_APPROVAL','FAILED','CANCELLED','IMPLEMENTED_UNVERIFIED'));
+    INSERT INTO factory_migrations(version) VALUES (2);
+  END IF;
+END $$;
+`;

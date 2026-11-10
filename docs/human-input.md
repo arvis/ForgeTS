@@ -41,6 +41,8 @@ The human said planning was complete and directed milestone-by-milestone impleme
 
 The human subsequently approved the official Node worker image and instructed Codex to use fake provider tests while leaving paid testing blocked. [ADR 0009](adr/0009-m2-docker-worker.md) and [the worker spec](../specs/internal/m2-docker-worker.md) record the selected boundary. This permits the image pull and runtime containment tests; it does not establish a completed live run or authorize provider charges.
 
+The human then directed Codex to continue. Codex completed the offline integration: fake provider output drives actual Docker edits with persisted provenance/artifacts and an unverified checkpoint, as recorded in [ADR 0011](adr/0011-m2-durable-fixture.md) and [M2 evidence](m2-verification.md). The human's manual `m2 done` commit was preserved; its name does not waive live acceptance or approve M3. Token counts and remaining account percentage were not exposed, so the evidence records them as unavailable instead of inferring them from fixture tokens.
+
 ## Maintenance
 
 Record new substantive human questions, constraints, requested changes, and explicit decisions, linking to their resulting artifacts. Identify who proposed a choice and whether it was accepted, documented, implemented, or verified. Preserve historical entries and record later decisions as updates. Keep the record focused on engineering input and avoid unrelated personal details or claims of unobserved human review.

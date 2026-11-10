@@ -1,0 +1,114 @@
+{
+  "id": "dd03ef76-e139-473f-84bc-3c7d39f4781e",
+  "key": "m2-evidence-ce0db38f-2ebd-4463-a58f-15785b24a431",
+  "inputHash": "fe009a4c1145677be81be0242b71323f6ecdad9fedd043fe5cad30bed6fb6b47",
+  "mode": "sandbox-fixture",
+  "spec": {
+    "title": "Sandbox greeting fixture",
+    "goal": "Demonstrate an inspectable greeting replacement in the approved disposable sample.",
+    "requirements": [
+      "Replace Hello from ForgeTS with Hello from the sandbox.",
+      "Keep all edits in the disposable Docker workspace."
+    ],
+    "acceptanceCriteria": [
+      "Persist the actual before/after artifact and hashes.",
+      "Mark provider inference as a deterministic fixture and code verification as pending."
+    ],
+    "constraints": [
+      "No paid model calls, host edits, generated-code execution or merge approval."
+    ]
+  },
+  "state": "IMPLEMENTED_UNVERIFIED",
+  "version": 4,
+  "createdAt": "2026-11-10T13:42:22.142Z",
+  "updatedAt": "2026-11-10T13:42:22.882Z",
+  "outputs": [],
+  "report": {
+    "mode": "sandbox-fixture",
+    "mergeReady": false,
+    "outcome": "IMPLEMENTED_UNVERIFIED",
+    "outputs": [],
+    "error": null,
+    "limitations": [
+      "Provider outputs are deterministic fixtures; no live model was called.",
+      "File edits occurred in a disposable Docker worker; generated-code verification is pending M3.",
+      "No review, approval, publishing or merge readiness is established."
+    ]
+  },
+  "execution": {
+    "target": "nest-greeting-v1",
+    "workspaceId": "fdb4207d-3c5a-4df6-8f17-57194a7f9278",
+    "targetHash": "6ebf60a5f51bc300511514337a17fb69e884a67fae8662757f142b33a5dc3c28",
+    "providerAttempts": 2,
+    "invocations": [
+      {
+        "id": "05541def-25a2-424a-9c62-9f728a1797f8",
+        "runId": "dd03ef76-e139-473f-84bc-3c7d39f4781e",
+        "workspaceId": "fdb4207d-3c5a-4df6-8f17-57194a7f9278",
+        "provider": "openai",
+        "transport": "fake",
+        "model": "fixture-model",
+        "templateVersion": "m2-v1",
+        "stage": "planner",
+        "responseHash": "57584f4d1d734591606d6420f6b92be6818b2a372701428cd81af3eb3fa420ae",
+        "usage": null
+      },
+      {
+        "id": "5b5b95d5-822a-4377-b9f7-955322636237",
+        "runId": "dd03ef76-e139-473f-84bc-3c7d39f4781e",
+        "workspaceId": "fdb4207d-3c5a-4df6-8f17-57194a7f9278",
+        "provider": "openai",
+        "transport": "fake",
+        "model": "fixture-model",
+        "templateVersion": "m2-v1",
+        "stage": "implementer",
+        "responseHash": "608b1f63539d1245f7c58269ef8fbe6f2d82eadd757022b54d61e9b23b2e5724",
+        "usage": null
+      }
+    ],
+    "plan": {
+      "stage": "planner",
+      "summary": "Fixture greeting replacement",
+      "steps": ["Replace greeting in the approved sample"],
+      "fileChanges": ["src/main.ts"],
+      "testStrategy": ["Generated-code verification remains pending M3"],
+      "risks": ["Fake inference is not live model evidence"]
+    },
+    "implementation": {
+      "stage": "implementer",
+      "summary": "Fixture replacement proposal",
+      "request": {
+        "capability": "replace",
+        "files": [
+          {
+            "path": "src/main.ts",
+            "beforeHash": "dc6d1ae85e449b895c601382ec559207dc612d7682fe84c545bf948a83f726c8",
+            "content": "import 'reflect-metadata';\nimport { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\nimport { pathToFileURL } from 'node:url';\n\n@Controller()\nexport class GreetingController {\n  @Get()\n  greeting(): { message: string } {\n    return { message: 'Hello from the sandbox' };\n  }\n}\n\n@Module({ controllers: [GreetingController] })\nexport class AppModule {}\n\nexport async function bootstrap() {\n  const app = await NestFactory.create(AppModule, { logger: false });\n  await app.listen(4320, '127.0.0.1');\n  return app;\n}\n\nif (\n  process.argv[1] &&\n  import.meta.url === pathToFileURL(process.argv[1]).href\n) {\n  void bootstrap().catch(() => {\n    process.stderr.write('SAMPLE_FAILED\\n');\n    process.exitCode = 1;\n  });\n}\n"
+          }
+        ]
+      }
+    },
+    "tool": {
+      "capability": "replace",
+      "status": "completed",
+      "executed": true,
+      "baseHash": "6ebf60a5f51bc300511514337a17fb69e884a67fae8662757f142b33a5dc3c28",
+      "resultHash": "e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5",
+      "error": null
+    },
+    "artifact": {
+      "baseHash": "6ebf60a5f51bc300511514337a17fb69e884a67fae8662757f142b33a5dc3c28",
+      "resultHash": "e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5",
+      "diffHash": "3e70c053c783a33b787e81591ac969bb6981c0361ad4440b29f80c112af1519e",
+      "changes": [
+        {
+          "path": "src/main.ts",
+          "before": "import 'reflect-metadata';\nimport { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\nimport { pathToFileURL } from 'node:url';\n\n@Controller()\nexport class GreetingController {\n  @Get()\n  greeting(): { message: string } {\n    return { message: 'Hello from ForgeTS' };\n  }\n}\n\n@Module({ controllers: [GreetingController] })\nexport class AppModule {}\n\nexport async function bootstrap() {\n  const app = await NestFactory.create(AppModule, { logger: false });\n  await app.listen(4320, '127.0.0.1');\n  return app;\n}\n\nif (\n  process.argv[1] &&\n  import.meta.url === pathToFileURL(process.argv[1]).href\n) {\n  void bootstrap().catch(() => {\n    process.stderr.write('SAMPLE_FAILED\\n');\n    process.exitCode = 1;\n  });\n}\n",
+          "after": "import 'reflect-metadata';\nimport { Controller, Get, Module } from '@nestjs/common';\nimport { NestFactory } from '@nestjs/core';\nimport { pathToFileURL } from 'node:url';\n\n@Controller()\nexport class GreetingController {\n  @Get()\n  greeting(): { message: string } {\n    return { message: 'Hello from the sandbox' };\n  }\n}\n\n@Module({ controllers: [GreetingController] })\nexport class AppModule {}\n\nexport async function bootstrap() {\n  const app = await NestFactory.create(AppModule, { logger: false });\n  await app.listen(4320, '127.0.0.1');\n  return app;\n}\n\nif (\n  process.argv[1] &&\n  import.meta.url === pathToFileURL(process.argv[1]).href\n) {\n  void bootstrap().catch(() => {\n    process.stderr.write('SAMPLE_FAILED\\n');\n    process.exitCode = 1;\n  });\n}\n",
+          "beforeHash": "dc6d1ae85e449b895c601382ec559207dc612d7682fe84c545bf948a83f726c8",
+          "afterHash": "94d1fa6cc92d6bad7ec0beb69b0ea773cc02ffb55ffa006b7b0e7f7ab8c0aa4d"
+        }
+      ]
+    }
+  }
+}

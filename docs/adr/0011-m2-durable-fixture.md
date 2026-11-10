@@ -1,0 +1,18 @@
+# ADR 0011: Durable fixture inference with actual sandbox artifacts
+
+- Date: 2026-11-10
+- Status: implemented for fake-provider runs; live completion blocked by instruction
+
+Keep M1's mock HTTP submission and simulated stage outputs intact. Add a separate local `factory:sandbox` CLI for the single approved `nest-greeting-v1` fixture. It uses the same validated local PostgreSQL configuration and owner lock, applies additive migrations, recovers interrupted records without replay and removes strictly named/labeled abandoned ForgeTS workers while holding ownership. No CLI/spec field selects a provider/model/key/image/command or arbitrary source repository. The existing loopback API can read the resulting history but does not submit fixture/live runs.
+
+Ship a tiny trusted NestJS sample and a checked in-memory snapshot of its initial source. Development tests compare their normalized bytes; runtime copies only the in-memory data over stdin, never traverses an arbitrary host target. The sample's dependencies use existing exact NestJS versions and the root lockfile; builds/tests on the host cover trusted development assets only. Edited sample bytes remain worker data and are not compiled or executed on the host.
+
+Add `sandbox-fixture` provenance and optional bounded execution evidence without changing historical mock records. A transactional migration extends the state constraint with terminal `IMPLEMENTED_UNVERIFIED`; the existing partial admission index still spans all executing modes. Strict cross-mode checks reject missing evidence, mock promotion and fixture entry into verification/review/approval states. Successful fixture runs have no M1 simulated stage outputs, always `mergeReady: false`, and explicitly defer generated-code verification to M3.
+
+Bind provider replies to the run/workspace/template/stage and exact output hash, accepting only fake transport in this workflow. Enforce plan paths/preimages before dispatch. Persist attempted calls and successful invocation provenance, then persist the proposed replacement and pending tool record before worker dispatch. Compare the worker's observed snapshot with the trusted expected replacement and persist before/after content and hashes atomically with the terminal event. Idempotent retry returns the prior run without replaying providers or workers. Failed calls may have unknown usage; failed worker execution may be unknown rather than falsely reported as not executed.
+
+Core depends on typed provider/worker ports. The CLI composes concrete adapters. The PostgreSQL owner connection supplies a cancellation signal and bounded owner checks. The worker checks ownership before setup and immediately before start; loss of the connection aborts running containers. New-owner startup cleanup precedes new work. A daemon/network failure can leave cleanup or persistence uncertain: fail closed, preserve the pending evidence and require recovery/operator inspection. This is one-owner local orchestration, not a distributed lease/fencing implementation or a claim of instantaneous failure detection.
+
+The human explicitly kept paid tests blocked. This workflow demonstrates fake inference driving real isolated file changes and durable evidence. It cannot satisfy M2's live-model acceptance criterion, currency-budget/account compatibility checks or M3's actual generated-code checks. Development tokens/account allowance percentages remain unavailable; fixture usage stays null unless a fixture explicitly supplies test counts. No milestone completion or M3 authorization is inferred.
+
+References: [increment spec](../../specs/internal/m2-durable-fixture.md), [provider ADR](0010-m2-provider-adapter.md), [worker ADR](0009-m2-docker-worker.md), [M2 evidence](../m2-verification.md).

@@ -57,6 +57,60 @@ export const ProviderContextSchema = z.strictObject({
   runId: z.uuid(),
   workspaceId: z.uuid(),
 });
+const digest = z.string().regex(/^[a-f0-9]{64}$/);
+export const SourceSnapshotSchema = z
+  .array(
+    z.strictObject({
+      path: z.string().min(1).max(160),
+      content: z.string().max(8192),
+    }),
+  )
+  .min(1)
+  .max(8);
+export const SandboxSubmissionSchema = z.strictObject({
+  mode: z.literal('sandbox-fixture'),
+  target: z.literal('nest-greeting-v1'),
+  markdown: z.string().max(8192),
+  idempotencyKey: z.string().regex(/^[a-zA-Z0-9_-]{1,128}$/),
+});
+export const SandboxExecutionSchema = z.strictObject({
+  target: z.literal('nest-greeting-v1'),
+  workspaceId: z.uuid(),
+  targetHash: digest,
+  providerAttempts: z.number().int().min(0).max(2),
+  invocations: z.array(InvocationSchema).max(2),
+  plan: ProviderPlanSchema.nullable(),
+  implementation: ProviderImplementationSchema.nullable(),
+  tool: z
+    .strictObject({
+      capability: z.literal('replace'),
+      status: z.enum(['pending', 'completed', 'failed', 'unknown']),
+      executed: z.boolean().nullable(),
+      baseHash: digest,
+      resultHash: digest.nullable(),
+      error: z.enum(['WORKER_FAILURE', 'CANCELLED', 'INTERRUPTED']).nullable(),
+    })
+    .nullable(),
+  artifact: z
+    .strictObject({
+      baseHash: digest,
+      resultHash: digest,
+      diffHash: digest,
+      changes: z
+        .array(
+          z.strictObject({
+            path: z.string().max(160),
+            before: z.string().max(8192),
+            after: z.string().max(8192),
+            beforeHash: digest,
+            afterHash: digest,
+          }),
+        )
+        .max(8),
+    })
+    .nullable(),
+});
+export type SandboxExecution = z.infer<typeof SandboxExecutionSchema>;
 export const ProviderConfigSchema = z.strictObject({
   provider: z.literal('openai'),
   model: z.string().regex(/^[a-zA-Z0-9._:-]{1,128}$/),

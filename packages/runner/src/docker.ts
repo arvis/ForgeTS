@@ -121,6 +121,7 @@ export async function executeTrustedWorker(
   code: string,
   input: string,
   signal: AbortSignal,
+  assertOwner: () => Promise<void> = () => Promise.resolve(),
 ): Promise<string> {
   if (signal.aborted) throw new Error('WORKER_CANCELLED');
   if (process.platform !== 'win32') throw new Error('WORKER_UNSUPPORTED');
@@ -131,6 +132,7 @@ export async function executeTrustedWorker(
   const name = `forgets-worker-${randomUUID()}`;
   let creationAttempted = false;
   try {
+    await assertOwner();
     const info = JSON.parse(
       await docker(['info', '--format', '{{json .}}']),
     ) as {
@@ -149,6 +151,7 @@ export async function executeTrustedWorker(
     if (signal.aborted) throw new Error('WORKER_CANCELLED');
     creationAttempted = true;
     await docker([...workerArguments(name), '-e', code]);
+    await assertOwner();
     if (signal.aborted) throw new Error('WORKER_CANCELLED');
     return await docker(
       ['start', '--attach', '--interactive', name],
@@ -162,5 +165,33 @@ export async function executeTrustedWorker(
     } finally {
       busy = false;
     }
+  }
+}
+export async function recoverAbandonedWorkers(
+  assertOwner: () => Promise<void>,
+): Promise<number> {
+  await assertOwner();
+  if (process.platform !== 'win32') throw new Error('WORKER_UNSUPPORTED');
+  if (busy) throw new Error('WORKER_BUSY');
+  if (cleanupFailed) throw new Error('WORKER_CLEANUP');
+  busy = true;
+  try {
+    const output = await docker([
+      'ps',
+      '--all',
+      '--filter',
+      'label=forgets.worker=m2-v1',
+      '--format',
+      '{{.Names}}',
+    ]);
+    const names = output.trim() ? output.trim().split(/\r?\n/) : [];
+    for (const name of names) {
+      workerArguments(name);
+      await assertOwner();
+      await removeWorker(name);
+    }
+    return names.length;
+  } finally {
+    busy = false;
   }
 }

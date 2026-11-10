@@ -7,10 +7,14 @@ import {
 } from '@forgets/agents';
 import { executeTrustedWorker } from './docker.js';
 import { REPLACEMENT_WORKER } from './worker.js';
+export { recoverAbandonedWorkers } from './docker.js';
+export { SAMPLE_FILES } from './sample.js';
+export { fixtureProvider } from './fixture.js';
 export async function replaceInWorker(
   snapshot: unknown,
   request: unknown,
   signal: AbortSignal,
+  assertOwner?: () => Promise<void>,
 ): Promise<{ files: SourceFile[]; baseHash: string; resultHash: string }> {
   const files = parseSnapshot(snapshot);
   const expected = applyReplacements(files, request);
@@ -27,6 +31,7 @@ export async function replaceInWorker(
     REPLACEMENT_WORKER,
     JSON.stringify({ files, replacements }),
     signal,
+    assertOwner,
   );
   let result: SourceFile[];
   try {

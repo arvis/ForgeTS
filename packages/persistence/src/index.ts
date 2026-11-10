@@ -18,9 +18,11 @@ import {
   type ErrorCode,
   type Page,
   type RunEvent,
+  type SandboxExecution,
+  SandboxExecutionSchema,
 } from '@forgets/contracts';
 import type { Repository } from '@forgets/core';
-import { migration1 } from './migrations.js';
+import { migration1, migration2 } from './migrations.js';
 const OWNER_KEY = 714_930_121;
 function poolFor(input: LocalConfig) {
   const config = localConfig({
@@ -99,6 +101,7 @@ export async function migrate(config: LocalConfig): Promise<void> {
         await client.query('BEGIN');
         try {
           await client.query(migration1);
+          await client.query(migration2);
           await client.query('COMMIT');
         } catch (error) {
           await client.query('ROLLBACK');
@@ -113,6 +116,34 @@ export async function migrate(config: LocalConfig): Promise<void> {
   }
 }
 export class PgRepository implements Repository {
+  private readonly ownership = new AbortController();
+  get ownershipSignal() {
+    return this.ownership.signal;
+  }
+  async assertOwner(): Promise<void> {
+    this.guard();
+    try {
+      await this.owner!.query('SELECT 1');
+    } catch {
+      this.lost = true;
+      this.ownership.abort();
+      fail('PERSISTENCE');
+    }
+    this.guard();
+  }
+  async admitSandbox(
+    spec: FeatureSpec,
+    key: string,
+    hash: string,
+    execution: SandboxExecution,
+  ): Promise<{ run: FactoryRun; created: boolean }> {
+    return this.admit(
+      spec,
+      key,
+      hash,
+      validated(SandboxExecutionSchema, execution),
+    );
+  }
   readonly pool: Pool;
   private owner: PoolClient | null = null;
   private lost = false;
@@ -120,6 +151,7 @@ export class PgRepository implements Repository {
     this.pool = poolFor(config);
     this.pool.on('error', () => {
       this.lost = true;
+      this.ownership.abort();
     });
   }
   private guard() {
@@ -137,10 +169,11 @@ export class PgRepository implements Repository {
         if (!lock.rows[0]?.locked) fail('OWNER_BUSY');
         client.on('error', () => {
           this.lost = true;
+          this.ownership.abort();
         });
         this.owner = client;
         await client.query(
-          'SELECT version FROM factory_migrations WHERE version=1',
+          'SELECT version FROM factory_migrations WHERE version=2',
         );
         const unfinished = await this.pool.query<{ data: unknown }>(
           "SELECT data FROM factory_runs WHERE state IN ('CREATED','SPEC_VALIDATED','PLANNED','IMPLEMENTING','VERIFYING','REVIEWING')",
@@ -148,14 +181,39 @@ export class PgRepository implements Repository {
         for (const row of unfinished.rows) {
           const run = validated(FactoryRunSchema, row.data);
           const report: FinalReport = {
-            mode: 'mock',
+            mode: run.mode,
             mergeReady: false,
             outcome: 'FAILED',
             outputs: run.outputs,
             error: 'INTERRUPTED',
-            limitations: ['Simulation interrupted; no stages were replayed.'],
+            limitations: [
+              run.mode === 'mock'
+                ? 'Simulation interrupted; no stages were replayed.'
+                : 'Sandbox execution interrupted; no provider or worker actions replayed.',
+            ],
           };
-          await this.save(run, 'FAILED', run.outputs, report, 'INTERRUPTED');
+          const recovered =
+            run.execution?.tool?.status === 'pending'
+              ? {
+                  ...run,
+                  execution: {
+                    ...run.execution,
+                    tool: {
+                      ...run.execution.tool,
+                      status: 'unknown' as const,
+                      executed: null,
+                      error: 'INTERRUPTED' as const,
+                    },
+                  },
+                }
+              : run;
+          await this.save(
+            recovered,
+            'FAILED',
+            run.outputs,
+            report,
+            'INTERRUPTED',
+          );
         }
       } catch (error) {
         this.owner = null;
@@ -165,6 +223,7 @@ export class PgRepository implements Repository {
     });
   }
   async close(): Promise<void> {
+    this.ownership.abort();
     if (this.owner) {
       this.owner.release(true);
       this.owner = null;
@@ -175,6 +234,7 @@ export class PgRepository implements Repository {
     spec: FeatureSpec,
     key: string,
     hash: string,
+    execution?: SandboxExecution,
   ): Promise<{ run: FactoryRun; created: boolean }> {
     this.guard();
     return transaction(this.pool, async (client) => {
@@ -198,7 +258,7 @@ export class PgRepository implements Repository {
         id: randomUUID(),
         key,
         inputHash: hash,
-        mode: 'mock',
+        mode: execution ? 'sandbox-fixture' : 'mock',
         spec,
         state: 'CREATED',
         version: 0,
@@ -206,6 +266,7 @@ export class PgRepository implements Repository {
         updatedAt: at,
         outputs: [],
         report: null,
+        ...(execution ? { execution } : {}),
       });
       await client.query(
         'INSERT INTO factory_runs(id,idempotency_key,input_hash,state,version,created_at,data) VALUES($1,$2,$3,$4,$5,$6,$7)',

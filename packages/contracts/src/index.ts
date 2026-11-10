@@ -1,4 +1,11 @@
 import { z } from 'zod';
+import { SandboxExecutionSchema } from './provider.js';
+export {
+  SandboxExecutionSchema,
+  SandboxSubmissionSchema,
+  SourceSnapshotSchema,
+  type SandboxExecution,
+} from './provider.js';
 export {
   ProviderPlanSchema,
   ProviderImplementationSchema,
@@ -29,6 +36,8 @@ export const codes = [
   'BUDGET',
   'MOCK_FAILURE',
   'INTERRUPTED',
+  'PROVIDER_FAILURE',
+  'WORKER_FAILURE',
 ] as const;
 export type ErrorCode = (typeof codes)[number];
 export class DomainError extends Error {
@@ -116,6 +125,7 @@ export const states = [
   'AWAITING_HUMAN_APPROVAL',
   'FAILED',
   'CANCELLED',
+  'IMPLEMENTED_UNVERIFIED',
 ] as const;
 export const StateSchema = z.enum(states);
 export type State = z.infer<typeof StateSchema>;
@@ -130,6 +140,9 @@ export function transition(from: string, to: string): State {
   if (
     target.data !== 'FAILED' &&
     target.data !== 'CANCELLED' &&
+    !(
+      source.data === 'IMPLEMENTING' && target.data === 'IMPLEMENTED_UNVERIFIED'
+    ) &&
     states[index + 1] !== target.data
   )
     fail('TRANSITION');
@@ -203,7 +216,7 @@ export const ToolResultSchema = z.strictObject({
   summary,
 });
 export const FinalReportSchema = z.strictObject({
-  mode: z.literal('mock'),
+  mode: z.enum(['mock', 'sandbox-fixture']),
   mergeReady: z.literal(false),
   outcome: StateSchema,
   outputs: z.array(StageOutputSchema).max(4),
@@ -211,19 +224,59 @@ export const FinalReportSchema = z.strictObject({
   limitations: z.array(summary).min(1).max(8),
 });
 export type FinalReport = z.infer<typeof FinalReportSchema>;
-export const FactoryRunSchema = z.strictObject({
-  id: z.uuid(),
-  key: z.string(),
-  inputHash: z.string().regex(/^[a-f0-9]{64}$/),
-  mode: z.literal('mock'),
-  spec: FeatureSpecSchema,
-  state: StateSchema,
-  version: z.number().int().nonnegative(),
-  createdAt: z.iso.datetime(),
-  updatedAt: z.iso.datetime(),
-  outputs: z.array(StageOutputSchema).max(4),
-  report: FinalReportSchema.nullable(),
-});
+export const FactoryRunSchema = z
+  .strictObject({
+    id: z.uuid(),
+    key: z.string(),
+    inputHash: z.string().regex(/^[a-f0-9]{64}$/),
+    mode: z.enum(['mock', 'sandbox-fixture']),
+    spec: FeatureSpecSchema,
+    state: StateSchema,
+    version: z.number().int().nonnegative(),
+    createdAt: z.iso.datetime(),
+    updatedAt: z.iso.datetime(),
+    outputs: z.array(StageOutputSchema).max(4),
+    report: FinalReportSchema.nullable(),
+    execution: SandboxExecutionSchema.optional(),
+  })
+  .superRefine((run, ctx) => {
+    const invalid = () =>
+      ctx.addIssue({ code: 'custom', message: 'Invalid execution provenance' });
+    if (run.report && run.report.mode !== run.mode) invalid();
+    if (run.mode === 'mock') {
+      if (run.execution || run.state === 'IMPLEMENTED_UNVERIFIED') invalid();
+      return;
+    }
+    const execution = run.execution;
+    if (
+      !execution ||
+      run.outputs.length ||
+      ['VERIFYING', 'REVIEWING', 'AWAITING_HUMAN_APPROVAL'].includes(run.state)
+    ) {
+      invalid();
+      return;
+    }
+    if (
+      execution.invocations.some(
+        (value) =>
+          value.runId !== run.id ||
+          value.workspaceId !== execution.workspaceId ||
+          value.transport !== 'fake',
+      )
+    )
+      invalid();
+    if (
+      run.state === 'IMPLEMENTED_UNVERIFIED' &&
+      (!execution.plan ||
+        !execution.implementation ||
+        execution.invocations.length !== 2 ||
+        !execution.artifact ||
+        execution.tool?.status !== 'completed' ||
+        execution.tool.executed !== true ||
+        !run.report)
+    )
+      invalid();
+  });
 export type FactoryRun = z.infer<typeof FactoryRunSchema>;
 export const EventSchema = z.strictObject({
   runId: z.uuid(),

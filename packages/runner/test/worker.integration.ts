@@ -11,6 +11,8 @@ import {
   executeTrustedWorker,
   dockerEnvironment,
   IMAGE,
+  workerArguments,
+  recoverAbandonedWorkers,
 } from '../src/docker.js';
 import { replaceInWorker } from '../src/index.js';
 
@@ -108,6 +110,55 @@ await test(
             await new Promise<void>((resolve, reject) =>
               server.close((error) => (error ? reject(error) : resolve())),
             );
+          }
+        },
+      );
+      await t.test(
+        'ownership is checked before worker start and abandoned workers require an owner',
+        async () => {
+          let checks = 0;
+          await assert.rejects(
+            executeTrustedWorker(
+              "console.log('must not start')",
+              '',
+              signal(),
+              async () => {
+                checks++;
+                if (checks === 2) throw new Error('OWNER_DENIED');
+              },
+            ),
+            /^Error: OWNER_DENIED$/,
+          );
+          assert.equal(checks, 2);
+          await assert.rejects(
+            recoverAbandonedWorkers(() =>
+              Promise.reject(new Error('OWNER_DENIED')),
+            ),
+            /^Error: OWNER_DENIED$/,
+          );
+          const name = 'forgets-worker-11111111-1111-4111-8111-111111111111';
+          await exec(
+            'docker',
+            [
+              '--host',
+              host,
+              ...workerArguments(name),
+              '-e',
+              'setInterval(()=>{},1000)',
+            ],
+            { timeout: 15000, env: dockerEnvironment(), windowsHide: true },
+          );
+          try {
+            assert.equal(
+              await recoverAbandonedWorkers(() => Promise.resolve()),
+              1,
+            );
+          } finally {
+            await exec('docker', ['--host', host, 'rm', '--force', name], {
+              timeout: 15000,
+              env: dockerEnvironment(),
+              windowsHide: true,
+            }).catch(() => {});
           }
         },
       );

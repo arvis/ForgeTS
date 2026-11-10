@@ -1,6 +1,6 @@
 # M2: Real provider and sandboxed implementation
 
-Status: implementation authorized on 2026-11-10 after the human declared planning complete and requested milestone-by-milestone implementation. First increment: [capability policy](m2-capability-policy.md). M2 is incomplete; provider/runtime choices and their implementation ADRs remain to be approved, and no paid call is authorized. Earlier [M1 evidence](../../docs/m1-verification.md) remains available; this authorization does not fabricate a separate M1 review result.
+Status: offline/fake-provider implementation locally verified on 2026-11-10. The human approved the Node image and explicitly kept paid testing blocked. [Capability policy](m2-capability-policy.md), [worker](m2-docker-worker.md), [provider adapter](m2-provider-adapter.md) and [durable fixture](m2-durable-fixture.md) increments have evidence. Full M2 remains incomplete: M2-5's live run, selected live model/account/currency-budget validation and full live acceptance are unverified. No completion-scope exception or M3 authorization is inferred. See [actual M2 evidence](../../docs/m2-verification.md).
 
 ## Goal and result
 

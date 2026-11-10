@@ -32,6 +32,12 @@ Assets include the developer's repository and host files, credentials, future pr
 | Invalid data or inconsistent events            | Zod, version guards, transactional event writes, uniqueness and admission indexes, restart recovery                  | Real PostgreSQL tests passed                           |
 | Misleading portfolio claims                    | Raw local baseline and acceptance evidence distinguish simulation, actual checks, and limitations                    | Documented; hosted CI unobserved                       |
 
+## M2 offline execution boundary
+
+The [M2 evidence record](m2-verification.md) and ADRs 0008–0011 document a fixed-source, fake-inference workflow with actual Docker file edits and PostgreSQL artifacts. Workers have no host mounts, credentials or Docker socket; resource/network/privilege/cancellation probes were run on the selected Windows/Docker Desktop Linux environment. Owner checks and connection-loss signals stop workers, and a new owner removes strictly named/labeled abandoned workers before new fixture work. Neither the worker nor its edited sample bytes execute generated code in this milestone. Host development tooling still runs trusted repository assets under session permissions.
+
+The separate fixture CLI exposes no live/provider/command/image/target override. Reports end unverified and never mark merge readiness. Native provider code is disabled by default and was tested only through fake transports. Paid tests remain blocked, a live model/currency budget is unapproved, and full M2 live acceptance is incomplete. This is a bounded demonstrated boundary, not protection against kernel/daemon compromise, instantaneous failure detection, untrusted host tools or arbitrary repositories. See the M2 record for the actual checks and residual cleanup/persistence uncertainty.
+
 ## Residual uncertainty
 
 M1 tests do not establish an OS sandbox, worker credential isolation, arbitrary secret redaction, process/resource containment, enforced human approval, or adversarial generated-code safety. Actual PostgreSQL readiness, API integration, and the small local baseline were observed; hosted CI has not been observed. Future isolation depends on the selected runtime/OS and needs direct negative containment tests. Database backups, remote hosting, authentication, and production operation remain outside M1.
