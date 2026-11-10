@@ -12,6 +12,8 @@ For a portfolio walkthrough, start with [human input and project direction](docs
 
 The [milestone spec index](specs/internal/README.md) links M0–M7, including the requested M2–M6 drafts. These drafts define future acceptance criteria; only M0/M1 have been implemented, and M1 result review remains pending.
 
+Development uses [small reviewed branches targeting `master`](docs/adr/0007-development-branches.md): scoped commits per completed spec, explicit authorization for remote writes/merges, and a review gate before the next milestone.
+
 ## Setup and verification
 
 Use Node 24.x (at least 24.11.0) and npm 11.x. The tested versions are Node 24.11.0 and npm 11.6.1; `.nvmrc` and `packageManager` record them. Git is needed for normal development. Docker Desktop's Linux engine with Compose is required for the documented database, integration tests, and mock demo. Unit verification works without Docker.

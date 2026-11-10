@@ -35,6 +35,10 @@ This record summarizes substantive questions and instructions from the human col
 | Would scaling come after M6?                                      | Codex suggested an optional M7 for durable queues/multiple workers and explained that it could precede the dashboard if justified.                                                  | M7 is not in the approved charter. No scaling implementation is authorized. |
 | Where should load testing fit?                                    | Add a small M1 baseline; check real execution limits in M3; propose repeatable reporting in M5 and stress/spike/soak tests before raising concurrency in a later scaling milestone. | M1 draft updated for review. Later milestone additions remain proposals.    |
 
+## Decision update — 2026-11-10: Branching and master
+
+The human raised the missing branching policy, accepted the recommended reviewed branch/PR approach, and explicitly chose to retain `master`. Codex documented one branch for small milestones and several spec-scoped branches for larger ones, with scoped commits and review/action approval before merges. [ADR 0007](adr/0007-development-branches.md) records the workflow and preserves historical M0/M1 commits. The policy change itself is on `docs/branching-workflow`; no push, PR creation, merge, rename, or milestone implementation was authorized.
+
 ## Maintenance
 
 Record new substantive human questions, constraints, requested changes, and explicit decisions, linking to their resulting artifacts. Identify who proposed a choice and whether it was accepted, documented, implemented, or verified. Preserve historical entries and record later decisions as updates. Keep the record focused on engineering input and avoid unrelated personal details or claims of unobserved human review.

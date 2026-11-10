@@ -40,11 +40,14 @@ This policy is for Codex developing ForgeTS; it does not configure the factory's
 
 ## Local commits and human review
 
+- Keep `master` as the default branch. Before code, configuration, or documentation edits, create a descriptive local topic branch from the current reviewed `master`; do not commit new work directly on `master`. Inspect/preserve existing changes first. Remote refresh requires authorization; never silently reset/stash user work or rewrite shared history.
+- Use one branch for a small milestone and multiple spec-scoped branches/PRs for a large one (for example `m2/sandbox`, `m2/provider`). Keep each PR independently reviewable, targeting `master`; no permanent integration branch is needed by default. Follow [the branching ADR](docs/adr/0007-development-branches.md).
 - After completing each spec and passing its required checks, create a local Git commit containing the spec, its implementation, tests where applicable, and build-log evidence.
 - Inspect the staged diff before committing. Include only changes belonging to that spec; never commit secrets, generated output, or unrelated user changes.
 - If a required check fails or is blocked, report it and leave the spec incomplete unless the human explicitly accepts the exception. Do not bypass checks to manufacture a completed spec.
 - Do not push, merge, deploy, spend provider API credits, or access external repositories without explicit human authorization.
 - A local commit records work; it does not imply human approval. Stop at milestone review gates and do not start the next milestone until the human authorizes it.
+- Prepare PRs with the spec, ADRs, human input, actual verification, and limitations. Merge only after relevant checks and human review, with explicit authorization for the merge action. After an authorized merge, base subsequent work on updated `master`; delete a completed branch only when authorized and safe. Keep existing M0/M1 history intact.
 - Current checkpoint: M1 implementation is complete and awaits human review. The human requested M2–M6 draft specifications after M1; documentation is authorized, implementation of M2 or later is not.
 
 ## Architecture and trust boundaries
