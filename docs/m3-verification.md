@@ -38,6 +38,10 @@ The initial type defect was `message: 123` where a string is required. A fake re
 
 Original M2 inference/tool evidence stays intact, repairs have explicit fake provenance/null usage, and actual check results have source/workspace/attempt/toolchain identities. A repeated completed or interrupted command returns prior evidence without another repair. Unknown cleanup/persistence cannot yield eligibility. `VERIFIED_AWAITING_REVIEW` is a handoff to unimplemented M4 review/approval; `mergeReady` remains false in both records.
 
+## Local integration
+
+At the human's explicit request, local milestone merges completed without conflicts: M2 `df64208`, then M3 `e20745d`. Both topic tips are ancestors of `master`; the resulting tree exactly matched policy/candidate `fa56417` on `m3/verification`, whose app/tooling code matched tested implementation `5ea8c10`. No behavior changed during integration, so the existing executed gates carry through by tree identity rather than an invented claim that they were rerun after merge. A final documentation-only commit records these observations. The human will push; no remote access, push, deployment, paid call or M4 work was performed.
+
 ## Setup and remaining boundaries
 
 After `npm ci` and a successful repository build, `npm run worker:prepare` creates the offline local tool image and `.workspaces/m3-toolchain.json`. Stop active factory work before rebuilding tools. The existing disposable database and Docker Desktop Linux amd64/cgroup-v2 prerequisites remain. Run the worker integration suite with the local test database password; production targets and paid providers are excluded.
