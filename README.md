@@ -1,6 +1,6 @@
 # ForgeTS
 
-ForgeTS is an independent learning and portfolio project for a small TypeScript agentic software factory. **Current state: M1 mock workflow implemented and locally verified, awaiting human review.** The CLI and local NestJS API persist simulated runs in PostgreSQL. Agent implementation, verification, and review use deterministic fixtures; no generated code is executed. The roadmap is in [docs/PLAN.md](docs/PLAN.md), and workflow rules are in [AGENTS.md](AGENTS.md).
+ForgeTS is an independent learning and portfolio project for a small TypeScript agentic software factory. **Current state: M1 is implemented; M2's fake-provider sandbox workflow is implemented, with live acceptance still blocked.** The local NestJS API persists simulated M1 runs. A separate fixture CLI drives real disposable Docker file edits and persists their hashes/diff, explicitly marked unverified. No generated code is executed and no paid provider call is enabled by the CLI. The roadmap is in [docs/PLAN.md](docs/PLAN.md), and workflow rules are in [AGENTS.md](AGENTS.md).
 
 ## Why this exists
 
@@ -10,9 +10,27 @@ Codex's development workflow is separate from ForgeTS's runtime. The internal sp
 
 For a portfolio walkthrough, start with [human input and project direction](docs/human-input.md), then follow the linked specs, ADRs, and [build log](docs/build-log.md) for implementation and verification evidence.
 
-The [milestone spec index](specs/internal/README.md) links M0–M7, including the requested M2–M6 drafts. These drafts define future acceptance criteria; only M0/M1 have been implemented, and M1 result review remains pending.
+The [milestone spec index](specs/internal/README.md) links M0–M7. [M2 evidence](docs/m2-verification.md) distinguishes actual containment/persistence checks from fake inference and the unperformed live run. M3 and later remain unimplemented.
 
 ## Setup and verification
+
+### M2 fixture demo
+
+The worker supports Windows with Docker Desktop's Linux amd64 engine and cgroup v2 only; other runtimes fail closed. Acquire the approved pinned image during trusted setup:
+
+```powershell
+docker pull node@sha256:76d0ed0ed93bed4f4376211e9d8fddac4d8b3fbdb54cc45955696001a3c91152
+npm run db:test:up
+$env:FORGETS_ENV = 'test'
+$env:FORGETS_DB_PASSWORD = 'forgets_test_dev_only'
+npm run build
+npm run factory:sandbox -- specs/examples/sandbox-greeting.md demo-greeting-1
+npm run test:containment -w @forgets/runner
+```
+
+Run the fixture CLI while the mock API is stopped: they intentionally share one exclusive database owner. A repeated key returns the previous run without replay. The CLI applies additive local migrations and recovers interrupted records/workers; it never resets the database. Output ends at `IMPLEMENTED_UNVERIFIED`, with fake invocation provenance, actual worker outcomes and inspectable before/after artifacts. A `SANDBOX_FAILED`/cleanup error requires inspecting the engine and retained evidence before retrying. The example test database is disposable; no production endpoint or provider credentials belong in this demo. Use a new key after restarting the tmpfs database.
+
+### Development setup
 
 Use Node 24.x (at least 24.11.0) and npm 11.x. The tested versions are Node 24.11.0 and npm 11.6.1; `.nvmrc` and `packageManager` record them. Git is needed for normal development. Docker Desktop's Linux engine with Compose is required for the documented database, integration tests, and mock demo. Unit verification works without Docker.
 

@@ -1,0 +1,17 @@
+# M2 disposable Docker worker
+
+Status: worker increment implemented and locally verified, 2026-11-10; M2 incomplete. The human approved pulling and pinning the official Node 24.11.0 Bookworm slim image and requested fake provider tests with paid tests blocked.
+
+## Scope and acceptance
+
+- Add a runner package and fixed trusted Node worker for bounded replacement requests from the existing capability policy. Transfer source bytes using stdin; never mount or modify host source files. Output carries independently checked source/snapshot hashes; generated content is never executed by this M2 capability.
+- Support only the explicitly selected local Docker Desktop Linux engine on Windows, ignoring ambient Docker connection/credential environment. Pin the approved image by observed digest and use `--pull=never` at runtime. Unsupported/missing engines/images fail closed, with no host fallback.
+- Each operation uses its own named/labeled disposable container, uid/gid 1000, no network, no capabilities, no new privileges, read-only root, private namespaces, 0.5 CPU, 128 MiB memory with no additional swap, 32 PIDs, and 16 MiB no-exec tmpfs workspace. No bind/named-volume mounts, host sockets, keys, arbitrary command or image inputs exist in the public capability.
+- Bound worker time to five seconds, control commands to fifteen seconds, combined output to 64 KiB. Abort/timeout/output overflow removes the entire container, not only its Docker client. Verify cleanup; failed cleanup is an explicit error. Serialize worker execution within the process. Ownership cancellation is supplied by the trusted control plane; full database integration is a later M2 increment.
+- Validate all requests before container creation. Materialize only validated source records in fresh tmpfs with exclusive/no-follow regular-file operations and no simultaneously running generated code. Apply replacements inside the worker and compare returned data with the trusted expected snapshot. Reject mismatched/malformed output.
+- Write unhappy-path tests before behavior. Run actual Linux-worker tests for network denial against a controlled host test service, absent credential canaries/socket, non-root/read-only restrictions, enforced disk/memory/PID/CPU settings, output/time/cancellation limits, descendant termination, unchanged disposable host canary, regular-file operations and cleanup. Configuration inspection alone is not a runtime containment result.
+- Run `npm run verify`, worker integration checks, and existing PostgreSQL integration checks. Record digest, engine/kernel/runtime, exact outcomes and gaps. No paid provider request, external Git access, push or merge. Commit only after required checks pass; M2 remains incomplete until full integration and live acceptance evidence or an explicit scope exception.
+
+## Observed evidence
+
+The three unit tests and six containment checks failed against compiling missing-behavior placeholders before implementation. After implementation, `npm run verify` passed all 26 unit/HTTP tests, formatting, build, lint and strict typechecking. The containment command passed all six checks, and `npm run test:integration` passed all 12 existing PostgreSQL/API integration checks using the disposable test database. See [M2 verification](../../docs/m2-verification.md) for the exact environment, remaining acceptance gaps and paid-call restriction.

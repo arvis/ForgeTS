@@ -1,4 +1,19 @@
 import type { Agent } from '@forgets/core';
+export {
+  ResponsesProvider,
+  type Provider,
+  type ProviderInput,
+  type ProviderReply,
+  type Transport,
+} from './provider.js';
+export {
+  applyReplacements,
+  contentHash,
+  parseSnapshot,
+  snapshotHash,
+  type SourceFile,
+  type Replacement,
+} from './capability-policy.js';
 export const mockAgent: Agent = (stage, _spec, signal) => {
   if (signal.aborted)
     return Promise.reject(
