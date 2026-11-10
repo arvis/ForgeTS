@@ -43,6 +43,10 @@ The human subsequently approved the official Node worker image and instructed Co
 
 The human then directed Codex to continue. Codex completed the offline integration: fake provider output drives actual Docker edits with persisted provenance/artifacts and an unverified checkpoint, as recorded in [ADR 0011](adr/0011-m2-durable-fixture.md) and [M2 evidence](m2-verification.md). The human's manual `m2 done` commit was preserved; its name does not waive live acceptance or approve M3. Token counts and remaining account percentage were not exposed, so the evidence records them as unavailable instead of inferring them from fixture tokens.
 
+## Decision update — 2026-11-10: M3 implementation
+
+After reading the M2 evidence and its live-test limitation, the human explicitly instructed Codex to continue to M3. Codex treats this as permission for offline isolated verification and bounded fake-provider repair, preserving the unperformed M2 live result and blocked paid calls. [ADR 0012](adr/0012-m3-verification-budgets.md) records tool preparation and conservative budgets; [M3a](../specs/internal/m3a-isolated-checks.md) defines the first increment. A stacked local branch preserves the unmerged M2 dependency without changing `master`; there is no push/merge or M4 authorization. Development tokens and remaining quota percentage remain unavailable rather than estimated.
+
 ## Maintenance
 
 Record new substantive human questions, constraints, requested changes, and explicit decisions, linking to their resulting artifacts. Identify who proposed a choice and whether it was accepted, documented, implemented, or verified. Preserve historical entries and record later decisions as updates. Keep the record focused on engineering input and avoid unrelated personal details or claims of unobserved human review.

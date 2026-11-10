@@ -6,6 +6,11 @@ export default tseslint.config(
     ignores: ['**/dist/**', '**/coverage/**', 'artifacts/**', '.workspaces/**'],
   },
   js.configs.recommended,
+  {
+    languageOptions: {
+      parserOptions: { tsconfigRootDir: import.meta.dirname },
+    },
+  },
   tseslint.configs.recommended,
   {
     files: ['packages/**/*.ts', 'apps/**/*.ts'],

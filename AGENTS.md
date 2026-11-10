@@ -45,7 +45,7 @@ This policy is for Codex developing ForgeTS; it does not configure the factory's
 - If a required check fails or is blocked, report it and leave the spec incomplete unless the human explicitly accepts the exception. Do not bypass checks to manufacture a completed spec.
 - Do not push, merge, deploy, spend provider API credits, or access external repositories without explicit human authorization.
 - A local commit records work; it does not imply human approval. Stop at milestone review gates and do not start the next milestone until the human authorizes it.
-- Current checkpoint: M2's offline/fake-provider workflow is implemented and locally verified; stop for review before M3. The human approved the Node image but explicitly kept paid testing blocked. Full M2 live acceptance remains incomplete; no completion exception or M3 authorization is inferred. Paid provider calls, remote writes, and merges require their specific authorization. Record observed development token usage after milestones; mark unavailable counts and remaining account allowance percentages explicitly rather than estimate.
+- Current checkpoint: the human explicitly authorized M3 on 2026-11-10 after the M2 review handoff. Implement isolated verification and at most two repairs, then stop for review before M4. M2 live acceptance stays unverified and paid testing blocked; moving to M3 does not relabel that test as passed. M3 is on a stacked local branch from unmerged M2; no merge/push is authorized. Record observed development token usage after milestones; mark unavailable counts and remaining account allowance percentages explicitly rather than estimate.
 
 ## Architecture and trust boundaries
 

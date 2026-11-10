@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
+import { readToolchain } from './toolchain.js';
 
 // Observed official 24.11.0-bookworm-slim index; the worker selects linux/amd64.
 export const IMAGE =
@@ -122,6 +123,8 @@ export async function executeTrustedWorker(
   input: string,
   signal: AbortSignal,
   assertOwner: () => Promise<void> = () => Promise.resolve(),
+  profile: 'edit' | 'verification' = 'edit',
+  expectedImageId?: string,
 ): Promise<string> {
   if (signal.aborted) throw new Error('WORKER_CANCELLED');
   if (process.platform !== 'win32') throw new Error('WORKER_UNSUPPORTED');
@@ -133,6 +136,15 @@ export async function executeTrustedWorker(
   let creationAttempted = false;
   try {
     await assertOwner();
+    if (profile !== 'edit' && profile !== 'verification')
+      throw new Error('WORKER_CONFIG');
+    const toolchain = profile === 'verification' ? await readToolchain() : null;
+    if (
+      toolchain &&
+      expectedImageId !== undefined &&
+      toolchain.imageId !== expectedImageId
+    )
+      throw new Error('CHECK_TOOLCHAIN');
     const info = JSON.parse(
       await docker(['info', '--format', '{{json .}}']),
     ) as {
@@ -149,14 +161,44 @@ export async function executeTrustedWorker(
     )
       throw new Error('WORKER_UNSUPPORTED');
     if (signal.aborted) throw new Error('WORKER_CANCELLED');
+    let args = workerArguments(name);
+    if (toolchain) {
+      const image = JSON.parse(
+        await docker([
+          'image',
+          'inspect',
+          toolchain.imageId,
+          '--format',
+          '{{json .}}',
+        ]),
+      ) as { Id: string; Config: { Labels: Record<string, string> } };
+      if (
+        toolchain.baseImage !== IMAGE ||
+        image.Id !== toolchain.imageId ||
+        image.Config.Labels['forgets.toolchain'] !== 'm3-v1' ||
+        image.Config.Labels['forgets.base'] !== IMAGE ||
+        image.Config.Labels['forgets.source'] !== toolchain.sourceHash
+      )
+        throw new Error('CHECK_TOOLCHAIN');
+      const values: Record<string, string> = {
+        '--memory=128m': '--memory=512m',
+        '--memory-swap=128m': '--memory-swap=512m',
+        '--pids-limit=32': '--pids-limit=64',
+        '--cpus=0.5': '--cpus=1',
+        '--tmpfs=/workspace:rw,nosuid,nodev,noexec,size=16777216,uid=1000,gid=1000,mode=0700':
+          '--tmpfs=/workspace:rw,nosuid,nodev,noexec,size=67108864,uid=1000,gid=1000,mode=0700',
+        [IMAGE]: toolchain.imageId,
+      };
+      args = args.map((arg) => values[arg] ?? arg);
+    }
     creationAttempted = true;
-    await docker([...workerArguments(name), '-e', code]);
+    await docker([...args, '-e', code]);
     await assertOwner();
     if (signal.aborted) throw new Error('WORKER_CANCELLED');
     return await docker(
       ['start', '--attach', '--interactive', name],
       input,
-      5000,
+      profile === 'verification' ? 12000 : 5000,
       signal,
     );
   } finally {

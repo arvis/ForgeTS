@@ -1,4 +1,14 @@
 import { z } from 'zod';
+export {
+  CHECK_IDS,
+  CHECK_COMMANDS,
+  CheckRequestSchema,
+  ToolchainSchema,
+  RawCheckSchema,
+  CheckResultSchema,
+  passingRound,
+  type CheckResult,
+} from './verification.js';
 import { SandboxExecutionSchema } from './provider.js';
 export {
   SandboxExecutionSchema,
