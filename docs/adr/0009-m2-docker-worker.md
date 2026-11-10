@@ -1,0 +1,18 @@
+# ADR 0009: Fixed Docker Desktop Linux file worker
+
+- Date: 2026-11-10
+- Status: implementing under explicit Node-image approval; paid tests blocked
+
+Use the approved official `node:24.11.0-bookworm-slim` image, pinned to the observed OCI index digest `sha256:76d0ed0ed93bed4f4376211e9d8fddac4d8b3fbdb54cc45955696001a3c91152`, selecting Linux amd64. Registry inspection identified amd64 manifest `sha256:87ccbf5cc428351bc8e242a9e43ceb998ec546c33a08fe77a839227c9142ab7e`. Image acquisition is a trusted bootstrap action; normal workers use `--pull=never`. Image pinning identifies tested bytes, not vulnerability freedom or ongoing security maintenance.
+
+Support only Windows with the explicit local Docker Desktop Linux-engine named pipe. Reject unsupported engine OS/architecture/cgroup/security settings and never fall back to host execution or ambient `DOCKER_HOST`/contexts. The trusted control process uses Docker privileges; the worker receives no socket, host mounts, provider key, database credential, or control-plane environment. Docker CLI environment is a small system-path/temp allowlist.
+
+Each call starts a new container with stdin-only source transfer and a private 16 MiB tmpfs workspace. Use non-root 1000:1000, network none, read-only image root, dropped capabilities, no-new-privileges, default seccomp, private PID/IPC namespaces, init, 32 PIDs, 128 MiB memory/no extra swap, 0.5 CPU, bounded file descriptors, no logs driver, and a fixed Node entry point. Containers and their namespaces are removed in a finally block and absence is checked. A cleanup failure poisons further execution in that process. Serialize workers in-process; this does not replace M1's database owner/admission lock, whose M2 integration remains separate.
+
+The public operation is replacement, not arbitrary code/commands. A fixed trusted program receives policy-validated JSON, creates regular files exclusively in fresh directories, opens replacements without following links, verifies preimages, and returns bytes. No generated code executes concurrently, so generated content cannot replace checked files with symlinks between checks and writes. Host source paths are never opened. Validate returned data and compare the full snapshot identity independently. The lower-level trusted-code primitive exists internally for containment tests and is not exported as a model capability.
+
+Control commands have 15-second client deadlines; attached workers have five seconds and 64 KiB combined output. Cancellation/timeout/output failure removes the whole container before returning. Raw Docker diagnostics are discarded. Docker daemon outages can make deletion unprovable; report `WORKER_CLEANUP`, block further work, and require operator inspection. Control-plane crash recovery and cross-process ownership still need the later M2 integration; this increment does not expose a real-run API or promise automatic orphan recovery.
+
+Use direct runtime probes with disposable canaries, including a positive control for the host network test. Do not substitute argument inspection for actual containment. The boundary depends on the trusted Docker Desktop VM/kernel/daemon and its default seccomp policy; it does not defend against a kernel escape or malicious administrator. No production credentials or personal host data belong in tests. The old approved runtime must be reviewed before any deployment, which remains out of scope.
+
+References: [worker spec](../../specs/internal/m2-docker-worker.md), [capability policy](0008-m2-capability-policy.md), [Docker run documentation](https://docs.docker.com/engine/containers/run/).
