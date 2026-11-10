@@ -119,7 +119,7 @@ export const ProviderConfigSchema = z.strictObject({
     .min(1)
     .max(512)
     .regex(/^[!-~]+$/),
-  allowPaid: z.boolean().default(false),
+  allowPaid: z.literal(false).default(false),
   deadlineMs: z.number().int().min(1).max(10000).default(10000),
 });
 export function providerJSONSchema(stage: 'planner' | 'implementer') {

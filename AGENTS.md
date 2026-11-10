@@ -47,7 +47,11 @@ This policy is for Codex developing ForgeTS; it does not configure the factory's
 - After finishing each milestone and passing its required checks, commit all milestone changes and merge its topic branch into local `master`. The human explicitly authorized this standing local workflow on 2026-11-10; do not ask again for that local merge. Inspect staged scope and follow [the integration decision](docs/adr/0014-local-milestone-integration.md). A failed/blocked gate still blocks completion unless the human explicitly authorizes integrating the documented exception.
 - The human will push to the remote themselves. Do not push, create remote PRs, deploy, spend provider API credits or access external repositories without separate explicit authorization.
 - Local commits/merges record development work; they do not approve generated target code or the next milestone. Stop at milestone review gates until the human authorizes further implementation.
-- Current checkpoint: M3's offline verification/bounded repair is complete and locally verified; the authorized M2/M3 milestone branches have been merged into local `master`. M2 live acceptance remains unperformed and paid testing blocked. Stop before M4; the human handles remote pushing. Record observed development token usage after milestones; mark unavailable counts and remaining account allowance percentages explicitly rather than estimate.
+- Current checkpoint: M3's offline verification/bounded repair is complete and locally verified; the authorized M2/M3 milestone branches have been merged into local `master`. M2 is complete under the revised free/offline acceptance; live inference was never performed and is now outside scope. Stop before M4; the human handles remote pushing. Record observed development token usage after milestones; mark unavailable counts and remaining account allowance percentages explicitly rather than estimate.
+
+## Free project policy
+
+- ForgeTS must run without paid providers, subscriptions, hosted services or purchases. Use deterministic offline fixtures and local tools; never enable billable calls. Future milestones inherit this constraint. See [the free-project decision](docs/adr/0015-free-pet-project.md). Codex development account usage is separate.
 
 ## Architecture and trust boundaries
 
