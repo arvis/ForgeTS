@@ -10,6 +10,12 @@ import { REPLACEMENT_WORKER } from './worker.js';
 export { recoverAbandonedWorkers } from './docker.js';
 export { SAMPLE_FILES } from './sample.js';
 export { fixtureProvider } from './fixture.js';
+export { fixtureRepair, type RepairScenario } from './repair-fixture.js';
+export {
+  runCheck,
+  parseCheckRequest,
+  redactDiagnostics,
+} from './verification.js';
 export async function replaceInWorker(
   snapshot: unknown,
   request: unknown,

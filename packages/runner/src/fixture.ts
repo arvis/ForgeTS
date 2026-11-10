@@ -1,8 +1,11 @@
 import { ResponsesProvider } from '@forgets/agents';
-export function fixtureProvider(identity: {
-  runId: string;
-  workspaceId: string;
-}) {
+export function fixtureProvider(
+  identity: {
+    runId: string;
+    workspaceId: string;
+  },
+  fault: 'none' | 'type' = 'none',
+) {
   return new ResponsesProvider(
     {
       provider: 'openai',
@@ -38,10 +41,13 @@ export function fixtureProvider(identity: {
                   {
                     path: source.path,
                     beforeHash: source.beforeHash,
-                    content: source.content.replace(
-                      'Hello from ForgeTS',
-                      'Hello from the sandbox',
-                    ),
+                    content:
+                      fault === 'type'
+                        ? source.content.replace("'Hello from ForgeTS'", '123')
+                        : source.content.replace(
+                            'Hello from ForgeTS',
+                            'Hello from the sandbox',
+                          ),
                   },
                 ],
               },

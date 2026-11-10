@@ -1,4 +1,12 @@
 import { z } from 'zod';
+import { VerificationEvidenceSchema } from './verification.js';
+export {
+  VerificationEvidenceSchema,
+  RepairReplySchema,
+  RepairOutputSchema,
+  sourceDigest,
+  type VerificationEvidence,
+} from './verification.js';
 export {
   CHECK_IDS,
   CHECK_COMMANDS,
@@ -48,6 +56,8 @@ export const codes = [
   'INTERRUPTED',
   'PROVIDER_FAILURE',
   'WORKER_FAILURE',
+  'VERIFICATION_FAILURE',
+  'REPAIR_FAILURE',
 ] as const;
 export type ErrorCode = (typeof codes)[number];
 export class DomainError extends Error {
@@ -136,24 +146,38 @@ export const states = [
   'FAILED',
   'CANCELLED',
   'IMPLEMENTED_UNVERIFIED',
+  'REPAIRING',
+  'VERIFIED_AWAITING_REVIEW',
 ] as const;
 export const StateSchema = z.enum(states);
 export type State = z.infer<typeof StateSchema>;
-export const activeStates: readonly State[] = states.slice(0, 6);
+export const activeStates: readonly State[] = [
+  'CREATED',
+  'SPEC_VALIDATED',
+  'PLANNED',
+  'IMPLEMENTING',
+  'VERIFYING',
+  'REVIEWING',
+  'REPAIRING',
+];
 export const isActive = (state: State) => activeStates.includes(state);
 export function transition(from: string, to: string): State {
   const source = StateSchema.safeParse(from);
   const target = StateSchema.safeParse(to);
-  if (!source.success || !target.success || !isActive(source.data))
-    fail('TRANSITION');
-  const index = states.indexOf(source.data);
+  if (!source.success || !target.success) fail('TRANSITION');
+  const allowed: Partial<Record<State, readonly State[]>> = {
+    CREATED: ['SPEC_VALIDATED'],
+    SPEC_VALIDATED: ['PLANNED'],
+    PLANNED: ['IMPLEMENTING'],
+    IMPLEMENTING: ['VERIFYING', 'IMPLEMENTED_UNVERIFIED'],
+    VERIFYING: ['REVIEWING', 'REPAIRING', 'VERIFIED_AWAITING_REVIEW'],
+    REVIEWING: ['AWAITING_HUMAN_APPROVAL'],
+    REPAIRING: ['IMPLEMENTING'],
+    IMPLEMENTED_UNVERIFIED: ['VERIFYING'],
+  };
   if (
-    target.data !== 'FAILED' &&
-    target.data !== 'CANCELLED' &&
-    !(
-      source.data === 'IMPLEMENTING' && target.data === 'IMPLEMENTED_UNVERIFIED'
-    ) &&
-    states[index + 1] !== target.data
+    !(isActive(source.data) && ['FAILED', 'CANCELLED'].includes(target.data)) &&
+    !allowed[source.data]?.includes(target.data)
   )
     fail('TRANSITION');
   return target.data;
@@ -248,23 +272,59 @@ export const FactoryRunSchema = z
     outputs: z.array(StageOutputSchema).max(4),
     report: FinalReportSchema.nullable(),
     execution: SandboxExecutionSchema.optional(),
+    verification: VerificationEvidenceSchema.optional(),
   })
   .superRefine((run, ctx) => {
     const invalid = () =>
       ctx.addIssue({ code: 'custom', message: 'Invalid execution provenance' });
     if (run.report && run.report.mode !== run.mode) invalid();
     if (run.mode === 'mock') {
-      if (run.execution || run.state === 'IMPLEMENTED_UNVERIFIED') invalid();
+      if (
+        run.execution ||
+        run.verification ||
+        [
+          'IMPLEMENTED_UNVERIFIED',
+          'REPAIRING',
+          'VERIFIED_AWAITING_REVIEW',
+        ].includes(run.state)
+      )
+        invalid();
       return;
     }
     const execution = run.execution;
     if (
       !execution ||
       run.outputs.length ||
-      ['VERIFYING', 'REVIEWING', 'AWAITING_HUMAN_APPROVAL'].includes(run.state)
+      ['REVIEWING', 'AWAITING_HUMAN_APPROVAL'].includes(run.state)
     ) {
       invalid();
       return;
+    }
+    if (
+      ['VERIFYING', 'REPAIRING', 'VERIFIED_AWAITING_REVIEW'].includes(
+        run.state,
+      ) &&
+      !run.verification
+    )
+      invalid();
+    if (run.verification) {
+      if (
+        run.verification.initialHash !== execution.artifact?.resultHash ||
+        run.verification.artifact.baseHash !== execution.targetHash ||
+        run.verification.rounds.some((round) =>
+          round.results.some(
+            (result) => result.workspaceId !== execution.workspaceId,
+          ),
+        )
+      )
+        invalid();
+      if (
+        run.state === 'VERIFIED_AWAITING_REVIEW' &&
+        (run.verification.status !== 'passed' ||
+          !run.report ||
+          run.report.outcome !== run.state)
+      )
+        invalid();
     }
     if (
       execution.invocations.some(

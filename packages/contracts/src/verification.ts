@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { SourceSnapshotSchema } from './provider.js';
+import { createHash } from 'node:crypto';
+import {
+  SourceSnapshotSchema,
+  ProviderImplementationSchema,
+  SandboxExecutionSchema,
+} from './provider.js';
 
 export const CHECK_IDS = ['format', 'lint', 'typecheck', 'test'] as const;
 export const CHECK_COMMANDS = {
@@ -170,3 +175,118 @@ export function passingRound(
     ) && new Set(parsed.data.map((result) => result.id)).size === 4
   );
 }
+const digest = z.string().regex(/^[a-f0-9]{64}$/);
+export function sourceDigest(files: { path: string; content: string }[]) {
+  return createHash('sha256')
+    .update(
+      JSON.stringify(
+        [...files].sort((a, b) =>
+          a.path < b.path ? -1 : a.path > b.path ? 1 : 0,
+        ),
+      ),
+    )
+    .digest('hex');
+}
+export const RepairOutputSchema = z.strictObject({
+  stage: z.literal('repair'),
+  summary: z.string().min(1).max(512),
+  request: ProviderImplementationSchema.shape.request,
+});
+export const RepairReplySchema = z.strictObject({
+  output: RepairOutputSchema,
+  invocationId: z.uuid(),
+  runId: z.uuid(),
+  workspaceId: z.uuid(),
+  templateVersion: z.literal('m3-v1'),
+  transport: z.literal('fake'),
+  usage: z.null(),
+});
+export const VerificationEvidenceSchema = z
+  .strictObject({
+    version: z.literal('m3-v1'),
+    status: z.enum(['running', 'passed', 'failed', 'interrupted']),
+    initialHash: digest,
+    currentHash: digest,
+    currentFiles: SourceSnapshotSchema,
+    toolchainImageId: z
+      .string()
+      .regex(/^sha256:[a-f0-9]{64}$/)
+      .nullable(),
+    toolchainHash: digest.nullable(),
+    repairAttempts: z.number().int().min(0).max(2),
+    startedAt: z.iso.datetime(),
+    completedAt: z.iso.datetime().nullable(),
+    rounds: z
+      .array(
+        z.strictObject({
+          attempt: z.number().int().min(0).max(2),
+          inputHash: digest,
+          status: z.enum(['pending', 'complete', 'interrupted']),
+          results: z.array(CheckResultSchema).max(4),
+        }),
+      )
+      .max(3),
+    repairs: z
+      .array(
+        z.strictObject({
+          attempt: z.number().int().min(1).max(2),
+          invocationId: z.uuid(),
+          inputHash: digest,
+          resultHash: digest.nullable(),
+          status: z.enum(['requested', 'applied', 'failed', 'unknown']),
+          kind: z.literal('fake'),
+          templateVersion: z.literal('m3-v1'),
+          usage: z.null(),
+          output: RepairOutputSchema.nullable(),
+          outputHash: digest.nullable(),
+          error: z
+            .enum(['REPAIR_FAILURE', 'CANCELLED', 'INTERRUPTED', 'BUDGET'])
+            .nullable(),
+        }),
+      )
+      .max(2),
+    artifact: SandboxExecutionSchema.shape.artifact.unwrap(),
+  })
+  .superRefine((value, ctx) => {
+    const invalid = () =>
+      ctx.addIssue({
+        code: 'custom',
+        message: 'Invalid verification provenance',
+      });
+    if (
+      value.repairAttempts !== value.repairs.length ||
+      value.currentHash !== sourceDigest(value.currentFiles)
+    )
+      invalid();
+    if (value.repairs.some((repair, index) => repair.attempt !== index + 1))
+      invalid();
+    const ids: string[] = [];
+    for (const [index, round] of value.rounds.entries()) {
+      if (
+        round.attempt !== index ||
+        (round.status === 'complete' && round.results.length !== 4)
+      )
+        invalid();
+      for (const result of round.results) {
+        ids.push(result.id);
+        if (
+          result.inputHash !== round.inputHash ||
+          result.attempt !== round.attempt ||
+          result.imageId !== value.toolchainImageId ||
+          result.toolchainHash !== value.toolchainHash
+        )
+          invalid();
+      }
+    }
+    if (new Set(ids).size !== ids.length) invalid();
+    const latest = value.rounds.at(-1);
+    if (value.artifact.resultHash !== value.currentHash) invalid();
+    if (
+      value.status === 'passed' &&
+      (!latest ||
+        latest.status !== 'complete' ||
+        !passingRound(latest.results, value.currentHash, latest.attempt))
+    )
+      invalid();
+  });
+export type VerificationEvidence = z.infer<typeof VerificationEvidenceSchema>;

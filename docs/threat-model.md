@@ -38,6 +38,12 @@ The [M2 evidence record](m2-verification.md) and ADRs 0008–0011 document a fix
 
 The separate fixture CLI exposes no live/provider/command/image/target override. Reports end unverified and never mark merge readiness. Native provider code is disabled by default and was tested only through fake transports. Paid tests remain blocked, a live model/currency budget is unapproved, and full M2 live acceptance is incomplete. This is a bounded demonstrated boundary, not protection against kernel/daemon compromise, instantaneous failure detection, untrusted host tools or arbitrary repositories. See the M2 record for the actual checks and residual cleanup/persistence uncertainty.
 
+## M3 verification and repair boundary
+
+The [M3 evidence](m3-verification.md) records actual offline compiler/linter/formatter/assertion checks and bounded fake repairs. Fixed image-resident commands/configuration/tests run in fresh restricted containers; generated dependencies/configuration cannot replace the registry. Source mutation, stale/missing/duplicate results, wrong toolchain/workspace identity, output flooding, timeouts and unknown cleanup cannot yield a passing round. Real generated target tests execute inside workers; host builds/tests cover trusted development files only.
+
+Repair counters and pending requests are persisted before calls, patches before application, and actual results with atomic version/event checkpoints. At most two repairs/three rounds are possible; interruption fails without replay and original mock/fixture provenance remains separate. Diagnostics redact tested patterns, not arbitrary secrets. A trusted local bootstrap/dependency installation, Docker daemon/kernel, fixed sample scope and bounded failure detection remain assumptions. Actual transient timeout failures are retained in the evidence; no scaled operating envelope or universal security guarantee is claimed. M4 approval remains unimplemented and all reports retain `mergeReady: false`.
+
 ## Residual uncertainty
 
 M1 tests do not establish an OS sandbox, worker credential isolation, arbitrary secret redaction, process/resource containment, enforced human approval, or adversarial generated-code safety. Actual PostgreSQL readiness, API integration, and the small local baseline were observed; hosted CI has not been observed. Future isolation depends on the selected runtime/OS and needs direct negative containment tests. Database backups, remote hosting, authentication, and production operation remain outside M1.

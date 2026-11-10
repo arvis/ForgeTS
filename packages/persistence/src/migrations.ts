@@ -35,3 +35,14 @@ DO $$ BEGIN
   END IF;
 END $$;
 `;
+export const migration3 = `
+DO $$ BEGIN
+  IF NOT EXISTS (SELECT 1 FROM factory_migrations WHERE version=3) THEN
+    ALTER TABLE factory_runs DROP CONSTRAINT factory_runs_state_check;
+    ALTER TABLE factory_runs ADD CONSTRAINT factory_runs_state_check CHECK (state IN ('CREATED','SPEC_VALIDATED','PLANNED','IMPLEMENTING','VERIFYING','REVIEWING','AWAITING_HUMAN_APPROVAL','FAILED','CANCELLED','IMPLEMENTED_UNVERIFIED','REPAIRING','VERIFIED_AWAITING_REVIEW'));
+    DROP INDEX factory_runs_active;
+    CREATE UNIQUE INDEX factory_runs_active ON factory_runs ((true)) WHERE state IN ('CREATED','SPEC_VALIDATED','PLANNED','IMPLEMENTING','VERIFYING','REVIEWING','REPAIRING');
+    INSERT INTO factory_migrations(version) VALUES (3);
+  END IF;
+END $$;
+`;

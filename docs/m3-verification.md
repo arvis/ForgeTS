@@ -1,6 +1,6 @@
-# M3 verification — in progress
+# M3 verification — offline acceptance
 
-Date: 2026-11-10. The human explicitly authorized M3 after the M2 handoff, while paid calls remain blocked and M2 live acceptance remains unperformed. Work uses stacked local `m3/verification` from unmerged M2; no merge, push or M4 implementation is authorized.
+Date: 2026-11-10. M3's offline verification/bounded repair is implemented and locally verified. Paid calls remain blocked and M2 live acceptance remains unperformed. The human explicitly requested local M2/M3 integration into `master` and reserved remote pushes to themselves. Work began on stacked `m3/verification`; no M4 implementation is authorized.
 
 ## M3a isolated checks
 
@@ -16,10 +16,34 @@ An early combined containment run timed out in the existing M2 PID-exhaustion pr
 
 A later combined run captured an unavailable clean-lint result and correctly refused to pass the round. A focused lint invocation passed, and the final serial run passed `npm run verify` (46 unit/HTTP tests) and all 15 worker/check integration tests. Earlier PostgreSQL/API checks passed 13/13. Fixed sanitized error codes now distinguish uncaptured worker failures. These observations establish one tested local run, not a load/stability envelope; no failing result was relabeled as passing and no budget was increased to bypass failure.
 
-## Setup and remaining work
+## M3b durable repair
+
+[ADR 0013](adr/0013-m3-durable-repair.md) and [the repair spec](../specs/internal/m3b-bounded-repair.md) record source/artifact binding, same-state transactional checkpoints, central transitions and a maximum of two repairs/three rounds. The initial six core tests, lifecycle contract test, PostgreSQL checkpoint test, CLI validation and CLI integration first failed against compiling missing behavior. Two later test-first regressions exposed loss of observed cancellation cleanup and duplicate check IDs corrupting a failure snapshot; both were fixed. Unit fixtures also reject stale, oversized, foreign-identity and scope-expanding repair data. Unit port fixtures are not described as actual tools.
+
+Final commands and observed results:
+
+- `npm ci`: succeeded; existing 10 moderate findings remain. No external dependency version changed.
+- `npm run verify`: all format/build/typed-lint/strict-typecheck gates and 56 unit/HTTP tests passed. The expanded core fixture cases were compiled and rerun successfully afterward.
+- `npm run test:integration -w @forgets/persistence`, then `npm run test:integration -w @forgets/api`: 14/14 passed, including event-write rollback, repair admission and restart without replay.
+- `npm run test:containment -w @forgets/runner`: final fully serial suite passed 16/16. It includes actual tools, containment/ownership/cancellation, a repaired defect, a persistent defect, malformed repair, idempotent retry, database reload and contiguous event sequences.
+
+Actual retained records were read from the disposable PostgreSQL instance after the successful suite:
+
+| Record                                                                                   | Outcome                    | Repairs | Verification rounds/check results             |
+| ---------------------------------------------------------------------------------------- | -------------------------- | ------- | --------------------------------------------- |
+| [Repaired run](evidence/m3-repaired.json), `82953b4a-3ae6-40b9-96c0-5cd25016605b`        | `VERIFIED_AWAITING_REVIEW` | 1       | 2 rounds, 8 real results; final four all pass |
+| [Persistent defect](evidence/m3-persistent.json), `f432182d-4343-4f5b-be15-6226548e21b7` | `FAILED`                   | 2       | 3 rounds, 12 real results; no further repair  |
+
+The initial type defect was `message: 123` where a string is required. A fake repair proposed the corrected greeting, the broker actually applied it in Docker, and every check reran against the new digest. The repaired digest is `e265602c59868a1d80a82bf93627783de3032365882f58d62be20169615364f5`; the persistent broken digest is `991756edf2330c7472149f6350fefa41c438d565f0af984a1d074c71daa93a8a`. Test checks include fresh compilation; `commandsExecuted` distinguishes an assertion run from a compilation prerequisite failure. No skipped prerequisite is counted as passing. Check durations include worker lifecycle time, while `toolDurationMs` measures child execution when captured.
+
+Original M2 inference/tool evidence stays intact, repairs have explicit fake provenance/null usage, and actual check results have source/workspace/attempt/toolchain identities. A repeated completed or interrupted command returns prior evidence without another repair. Unknown cleanup/persistence cannot yield eligibility. `VERIFIED_AWAITING_REVIEW` is a handoff to unimplemented M4 review/approval; `mergeReady` remains false in both records.
+
+## Setup and remaining boundaries
 
 After `npm ci` and a successful repository build, `npm run worker:prepare` creates the offline local tool image and `.workspaces/m3-toolchain.json`. Stop active factory work before rebuilding tools. The existing disposable database and Docker Desktop Linux amd64/cgroup-v2 prerequisites remain. Run the worker integration suite with the local test database password; production targets and paid providers are excluded.
 
-Durable verification rounds, the two-repair loop, ordered repair events, restart/interruption behavior and the final reviewed milestone handoff are not implemented by M3a alone. Passing these sample checks proves only the recorded cases; it is not general correctness/security, human approval or merge readiness. Tool/dependency/kernel trust and redaction limits remain as documented in the ADR.
+Use `npm run factory:verify -- specs/examples/sandbox-greeting.md repair KEY` with the local test database and prepared tool image. Fixed scenarios are `clean`, `repair`, `persistent`, `malformed` and `provider-failure`; failed scenarios return exit code 1 with their record. Scenario-scoped keys prevent accidental reuse between demonstrations. The original HTTP submission remains mock-only, and no CLI switch enables paid inference, arbitrary commands or remote repositories.
 
-Development token usage: **unavailable**. Remaining Codex account allowance: **unavailable (%)**. No account quota API is exposed. No native/paid runtime provider request has been made; future fixture repair usage must remain explicitly separate from Codex consumption.
+Passing these sample checks proves only the recorded cases; it is not general correctness/security, human approval or merge readiness. Live provider/repair validation is unperformed and M2's currency/account/live gate remains open. Tool/dependency/kernel trust, transient timeout observations and redaction limits remain as documented. The authorized Git merges concern ForgeTS development code, not applying generated sample artifacts or bypassing ForgeTS's future approval gate. Stop before M4.
+
+Development token usage: **unavailable**. Remaining Codex account allowance: **unavailable (%)**. No account quota API is exposed. No native/paid runtime provider request has been made; retained fixture repair usage is null and is separate from Codex consumption.
